@@ -17,6 +17,7 @@
   --line:rgba(212,175,106,.16);--line-soft:rgba(255,255,255,.07)
 }
 html,body{width:100%;overflow-x:hidden}
+html.ldr-lock,body.ldr-lock{overflow-y:hidden!important;height:100%!important;position:fixed!important;width:100%!important;top:0;left:0;right:0;bottom:0}
 body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
 /* Campo de estrellas fijo — firma visual del observatorio */
 #star-field{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55;
@@ -73,7 +74,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
       rgba(0,0,0,.38)  100%);
 }
 /* Todo el contenido encima de la capa */
-#hdr,.hwrap,.pills,#cnt,#mov,#toast,#srchwrap,#confirm-modal,#vaciar-modal,#notif-clear-modal,#prox-panel{position:relative;z-index:1}
+#hdr,.hwrap,.pills,#cnt,#mov,#toast,#srchwrap,#confirm-modal,#vaciar-modal,#notif-clear-modal,#prox-panel,#explorar-panel{position:relative;z-index:1}
 
 /* Base del loader — pantalla completa sobre todo */
 #ldr{
@@ -425,6 +426,13 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
       rgba(0,0,0,.40) 0%,
       rgba(0,0,0,.10) 18%,
       transparent     35%),
+    /* gradiente inferior — negro solido donde van los botones */
+    linear-gradient(to top,
+      #000000      0%,
+      #000000      18%,
+      rgba(0,0,0,.88) 30%,
+      rgba(0,0,0,.5)  44%,
+      transparent  62%);
 }
 .hbtm{
   position:absolute;bottom:0;left:0;right:0;
@@ -514,31 +522,62 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 #htags{
-  font-size:12px;
-  letter-spacing:.3px;
-  background:linear-gradient(90deg,#e50914 0%,#c9a84c 55%,#e8c97a 100%);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
-  font-weight:700;
-  filter:drop-shadow(0 1px 4px rgba(229,9,20,.3));
+  display:none;
 }
-.hbtns{display:flex;gap:10px;flex-wrap:wrap}
-.bplay{display:inline-flex;align-items:center;gap:8px;background:#fff;color:#0a0a0f;
-  border:none;border-radius:10px;padding:11px 26px;font-size:14px;font-weight:700;cursor:pointer;
-  transition:background .2s,transform .15s}
-.bplay:hover{background:var(--gl)}
-.bplay:active{transform:scale(.97)}
-.blist{display:inline-flex;align-items:center;gap:8px;
-  background:rgba(255,255,255,.08);color:#fff;border:1.5px solid rgba(255,255,255,.18);border-radius:10px;
-  padding:10.5px 22px;font-size:14px;font-weight:700;cursor:pointer;backdrop-filter:blur(6px);
-  transition:background .2s,border-color .2s}
-.blist:hover{background:rgba(255,255,255,.14);border-color:rgba(212,175,106,.4)}
-.blist.on{background:rgba(70,211,105,.18);color:var(--grn);border:1.5px solid var(--grn)}
-.hdots{position:absolute;bottom:14px;right:18px;display:flex;gap:5px;z-index:5}
-.hdot{width:10px;height:3px;border-radius:2px;background:rgba(255,255,255,.28);
-  cursor:pointer;transition:all .3s;border:none;padding:0}
-.hdot.on{width:24px;background:#fff}
+.hbtns{display:flex;gap:12px;align-items:center;flex-wrap:nowrap;width:100%}
+.bplay{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:10px;background:#e50914;color:#000;
+  border:none;border-radius:50px;padding:14px 22px;font-size:15px;font-weight:800;cursor:pointer;
+  letter-spacing:.2px;
+  box-shadow:0 4px 16px rgba(229,9,20,.35);
+  transition:background .15s,transform .12s,box-shadow .15s}
+.bplay:hover{background:#c01c1f}
+.bplay:active{background:#a01515;transform:scale(.97);box-shadow:none}
+.blist{width:54px;height:54px;border-radius:50%;
+  background:transparent;color:#e50914;border:2.5px solid #e50914;
+  display:grid;place-items:center;cursor:pointer;flex-shrink:0;
+  transition:background .15s,transform .12s,border-color .15s;}
+.blist svg{width:22px;height:22px;stroke:#e50914;fill:none;stroke-width:2;transition:fill .15s,stroke .15s}
+.blist:hover{background:rgba(229,9,20,.12)}
+.blist.on{background:rgba(229,9,20,.12)}
+.blist.on svg{fill:#e50914}
+#hrating{
+  display:flex;align-items:center;gap:8px;
+  font-size:12px;color:rgba(255,255,255,.75);font-weight:600;
+}
+#hrating .hrate-box{
+  border:1.5px solid rgba(255,255,255,.5);border-radius:4px;
+  padding:1px 6px;font-size:11px;font-weight:700;color:#fff;
+}
+#hrating .hrate-dot{
+  width:3px;height:3px;border-radius:50%;
+  background:rgba(255,255,255,.5);display:inline-block;
+}
+#hdesc{
+  font-size:13px;line-height:1.5;color:rgba(255,255,255,.82);
+  max-height:84px;overflow:hidden;
+  display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;
+}
+.hdots{display:flex;gap:6px;padding:0 18px;margin-top:10px;margin-bottom:2px;z-index:5}
+.hdot{
+  flex:1;height:9px;border-radius:5px;
+  background:rgba(255,255,255,.22);
+  cursor:pointer;border:none;padding:0;
+  position:relative;overflow:hidden;
+  transition:background .2s;
+}
+.hdot::after{
+  content:'';
+  position:absolute;top:0;left:0;height:100%;width:0%;
+  background:#e50914;border-radius:2px;
+}
+.hdot.on::after{
+  animation:hdot-fill var(--hdot-dur,9s) linear forwards;
+}
+@keyframes hdot-fill{
+  from{width:0%}
+  to{width:100%}
+}
+.hdot.done::after{width:100%;background:#e50914;animation:none;}
 
 /* ── POSTER FLOTANTE TABLET/LAPTOP ──
    En móvil: oculto (display:none).
@@ -727,29 +766,33 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
   line-height:1.55;
   display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
 }
-.cr-banner-btns{display:flex;align-items:center;gap:10px;margin-top:4px}
+.cr-banner-btns{display:flex;align-items:center;gap:12px;margin-top:8px}
 
-/* Botón play — naranja, pill completo, icono play + texto */
+/* Botón play — estilo Crunchyroll: naranja cálido, pill, icono ▶ + texto */
 .cr-banner-play{
-  flex:1;display:inline-flex;align-items:center;justify-content:center;gap:9px;
-  background:#e50914;color:#000;border:none;border-radius:99px;
-  padding:13px 22px;font-size:15px;font-weight:800;cursor:pointer;
-  letter-spacing:.2px;
-  box-shadow:0 2px 14px rgba(229,9,20,.35);
+  flex:1;display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  background:#e50914;color:#000;border:none;border-radius:50px;
+  padding:14px 24px;font-size:16px;font-weight:700;cursor:pointer;
+  letter-spacing:.3px;
+  box-shadow:0 4px 18px rgba(229,9,20,.4);
   transition:background .15s,transform .12s,box-shadow .15s;
 }
-.cr-banner-play:active{background:#c01c1f;transform:scale(.97);box-shadow:none}
+.cr-banner-play svg{width:18px;height:18px;flex-shrink:0}
+.cr-banner-play:hover{background:#c01c1f}
+.cr-banner-play:active{background:#a01515;transform:scale(.97);box-shadow:none}
 
-/* Botón bookmark — circular, borde naranja */
+/* Botón Mi Lista — círculo con borde naranja, banderita adentro */
 .cr-banner-save{
-  width:52px;height:52px;border-radius:50%;
+  width:54px;height:54px;border-radius:50%;
   background:transparent;border:2.5px solid #e50914;color:#e50914;
   display:grid;place-items:center;cursor:pointer;flex-shrink:0;
-  transition:background .15s,transform .12s;
+  transition:background .15s,transform .12s,border-color .15s;
 }
-.cr-banner-save svg{width:24px;height:24px;stroke-width:2.2;fill:none;}
-.cr-banner-save.on svg{fill:#e50914;}
-.cr-banner-save:active{background:rgba(229,9,20,.18);transform:scale(.93)}
+.cr-banner-save svg{width:22px;height:22px;stroke-width:2;fill:none;stroke:#e50914;transition:fill .15s,stroke .15s;}
+.cr-banner-save.on{background:rgba(229,9,20,.12);}
+.cr-banner-save.on svg{fill:#e50914;stroke:#e50914;}
+.cr-banner-save:hover{background:rgba(229,9,20,.12)}
+.cr-banner-save:active{background:rgba(229,9,20,.22);transform:scale(.93)}
 .rowh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:0 2px}
 .row-vertodo{
   font-size:12px;font-weight:700;color:rgba(255,255,255,.5);
@@ -941,6 +984,154 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
 .cadd{background:rgba(255,255,255,.85);color:#000}
 .cadd.on{background:var(--grn);color:#fff}
 .cpct{font-size:10px;font-weight:700;color:var(--grn);margin-left:auto}
+/* ── Card wrapper ── */
+.card-wrap{flex-shrink:0;width:var(--cw);display:flex;flex-direction:column;gap:5px;}
+.card-wrap .card{width:100%;flex-shrink:0;}
+.card-footer{display:flex;align-items:flex-start;justify-content:space-between;gap:4px;padding:0 2px;}
+.ctitle-below{flex:1;font-size:11px;font-weight:600;color:#ddd;line-height:1.35;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.cdots{flex-shrink:0;width:22px;height:22px;border:none;background:none;cursor:pointer;
+  color:rgba(255,255,255,.5);font-size:20px;line-height:1;padding:0;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;transition:background .2s;margin-top:-1px;}
+.cdots:hover{background:rgba(255,255,255,.1);color:#fff;}
+.cdots.ctx-open{background:none;color:rgba(255,255,255,.5);}
+/* ══ PANEL EXPLORAR ══ */
+#explorar-panel{
+  position:fixed;inset:0;z-index:900;
+  background:#09090f;
+  display:none;flex-direction:column;
+  overflow:hidden;
+  overscroll-behavior:contain;
+}
+#explorar-panel.on{display:flex;animation:mvin .22s var(--ease)}
+#explorar-hdr{
+  display:flex;align-items:center;gap:12px;
+  padding:calc(env(safe-area-inset-top)+16px) 16px 14px;
+  background:rgba(9,9,15,.98);
+  border-bottom:1px solid rgba(212,175,106,.12);
+  flex-shrink:0;
+}
+#explorar-back{
+  background:rgba(255,255,255,.08);border:none;color:#fff;
+  width:36px;height:36px;border-radius:50%;cursor:pointer;
+  display:grid;place-items:center;flex-shrink:0;
+}
+#explorar-title{
+  font-family:"Bebas Neue",sans-serif;
+  font-size:22px;letter-spacing:1.5px;color:#fff;flex:1;
+}
+#explorar-srch-wrap{
+  display:flex;align-items:center;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:24px;padding:8px 14px;gap:8px;
+}
+#explorar-srch-input{
+  width:130px;background:none;border:none;outline:none;
+  color:#fff;font-size:13px;font-family:"DM Sans",sans-serif;
+}
+#explorar-srch-input::placeholder{color:rgba(255,255,255,.3);}
+#explorar-body{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  padding:16px 14px calc(90px + env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+}
+#explorar-body::-webkit-scrollbar{display:none}
+#explorar-body{scrollbar-width:none;-ms-overflow-style:none;}
+#explorar-tabs{
+  display:flex;gap:8px;overflow-x:auto;padding:14px 0 16px;
+  scrollbar-width:none;white-space:nowrap;
+}
+#explorar-tabs::-webkit-scrollbar{display:none}
+.exp-tab{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:9px 18px;border-radius:8px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.55);
+  font-family:"DM Sans",sans-serif;
+  font-size:13px;font-weight:700;letter-spacing:.4px;
+  cursor:pointer;white-space:nowrap;
+  transition:all .22s cubic-bezier(.4,0,.2,1);
+  flex-shrink:0;
+  text-transform:uppercase;
+}
+.exp-tab:active{transform:scale(.96);}
+.exp-tab.on{
+  background:linear-gradient(135deg,rgba(212,175,106,.15) 0%,rgba(212,175,106,.05) 100%);
+  border-color:rgba(212,175,106,.6);
+  color:#d4af6a;
+  box-shadow:0 0 0 1px rgba(212,175,106,.12),0 4px 16px rgba(212,175,106,.1);
+}
+.exp-section{margin-bottom:28px;}
+.exp-section-hdr{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.exp-section-line{display:inline-block;width:3px;height:18px;border-radius:2px;flex-shrink:0;}
+.exp-section-name{font-family:"Bebas Neue",sans-serif;font-size:18px;letter-spacing:1.2px;color:#fff;}
+.exp-section-count{font-size:11px;color:rgba(255,255,255,.35);font-weight:600;margin-left:4px;}
+.exp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.exp-card-wrap{display:flex;flex-direction:column;gap:5px;}
+.exp-card{position:relative;cursor:pointer;border-radius:12px;overflow:hidden;background:#111;aspect-ratio:2/3;}
+.exp-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s;}
+.exp-card:active img{transform:scale(1.05);}
+.exp-card-footer{display:flex;align-items:flex-start;justify-content:space-between;gap:4px;padding:0 2px;}
+.exp-card-label{
+  font-size:12px;font-weight:700;color:#fff;
+  line-height:1.3;flex:1;
+}
+.exp-card-dots{
+  flex-shrink:0;width:28px;height:28px;
+  display:flex;align-items:center;justify-content:center;
+  background:none;border:none;cursor:pointer;
+  color:rgba(255,255,255,.65);padding:4px;margin-top:-2px;
+  border-radius:50%;transition:background .15s;
+}
+.exp-card-dots:active{background:rgba(255,255,255,.12);}
+.exp-nores{text-align:center;padding:60px 20px;color:rgba(255,255,255,.3);font-size:14px;}
+#nav-explorar-btn.active svg rect{fill:var(--gold)!important;}
+#nav-explorar-btn.active span{color:var(--gold)!important;}
+
+/* ── Menú contextual ULTRA PREMIUM ── */
+#card-ctx{
+  position:fixed;z-index:9990;
+  background:linear-gradient(145deg,rgba(22,20,30,.97) 0%,rgba(14,12,20,.99) 100%);
+  backdrop-filter:blur(28px) saturate(1.6);
+  -webkit-backdrop-filter:blur(28px) saturate(1.6);
+  border-radius:18px;
+  border:1px solid rgba(212,175,106,.18);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.04) inset,
+    0 2px 0 rgba(212,175,106,.12) inset,
+    0 24px 60px rgba(0,0,0,.9),
+    0 8px 24px rgba(0,0,0,.7),
+    0 0 40px rgba(124,92,255,.06);
+  overflow:hidden;min-width:230px;
+  display:none;animation:ctxIn .2s cubic-bezier(.22,1,.36,1);}
+#card-ctx::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(212,175,106,.45) 40%,rgba(212,175,106,.45) 60%,transparent);
+  pointer-events:none;z-index:1;
+}
+#card-ctx.on{display:block;}
+@keyframes ctxIn{
+  from{opacity:0;transform:scale(.9) translateY(-6px)}
+  to{opacity:1;transform:scale(1) translateY(0)}
+}
+.ctx-item{
+  display:flex;align-items:center;gap:14px;padding:15px 20px;
+  font-size:14px;font-weight:600;color:rgba(255,255,255,.88);cursor:pointer;
+  transition:background .18s,color .18s,padding-left .18s;
+  border:none;background:none;width:100%;text-align:left;
+  letter-spacing:.15px;
+}
+.ctx-item:hover{
+  background:linear-gradient(90deg,rgba(212,175,106,.1) 0%,rgba(212,175,106,.04) 100%);
+  color:#fff;padding-left:24px;
+}
+.ctx-item:hover svg{opacity:1;color:var(--gold);}
+.ctx-item+.ctx-item{border-top:1px solid rgba(255,255,255,.05);}
+.ctx-item svg{flex-shrink:0;opacity:.6;transition:opacity .18s,color .18s;}
 
 
 
@@ -961,6 +1152,10 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
 
 /* Cards en grid: ancho y alto 100% de su celda */
 #cnt.grid-mode .card {
+  width: 100%;
+  flex-shrink: unset;
+}
+#cnt.grid-mode .card-wrap {
   width: 100%;
   flex-shrink: unset;
 }
@@ -1070,6 +1265,16 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
   background:linear-gradient(135deg,#b8860b,#8b6508);
   box-shadow:0 4px 18px rgba(201,168,76,.3);
 }
+
+/* MODAL CERRAR SESIÓN */
+#logout-modal{
+  position:fixed;inset:0;z-index:9995;
+  display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.82);backdrop-filter:blur(12px);
+  padding:0 20px;
+}
+#logout-modal.on{display:flex;animation:mvin .22s var(--ease)}
+#logout-modal .cm-title em{color:var(--red);font-style:normal}
 
 /* MODAL */
 #mov{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.82);
@@ -1258,8 +1463,8 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
   #hlogo{max-width:80%;max-height:88px}
   #hlogotxt{font-size:clamp(24px,3.8vw,42px)}
   #htags{font-size:13px}
-  .bplay,.blist{padding:12px 24px;font-size:14px;border-radius:12px}
-  .hdots{bottom:14px;left:28px;right:auto}
+  .bplay{padding:12px 24px;font-size:14px;border-radius:50px}.blist{width:54px;height:54px}
+  
   /* Poster flotante vertical — espacio negro de la derecha */
   .hposter-float{
     display:block !important;
@@ -1350,8 +1555,8 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
   #hlogotxt{font-size:clamp(28px,3vw,52px)}
   #htags{font-size:14px;letter-spacing:.4px}
   .hbtns{gap:12px}
-  .bplay,.blist{padding:13px 30px;font-size:15px;border-radius:12px}
-  .hdots{bottom:18px;left:56px;right:auto}
+  .bplay{padding:13px 30px;font-size:15px;border-radius:50px}.blist{width:54px;height:54px}
+  
   /* Poster flotante vertical — espacio negro de la derecha */
   .hposter-float{
     display:block !important;
@@ -1458,7 +1663,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
 
   /* Hero: aún más cinematográfico */
   .hbtm{padding-left:80px;width:42%}
-  .hdots{left:80px;right:auto}
+  
   #hlogo{max-height:115px}
   /* Poster flotante a 1440px+ — más grande */
   .hposter-float{
@@ -1512,7 +1717,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
 
 /* PROFILE MODAL */
 #profile-modal{
-  position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.88);
+  position:fixed;inset:0;z-index:970;background:rgba(0,0,0,.88);
   display:none;align-items:flex-end;justify-content:center;
   backdrop-filter:blur(8px);
 }
@@ -1541,6 +1746,14 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
   transition:border-color .2s;
 }
 #pm-name-input:focus{border-color:var(--gold)}
+#pem-name-input{
+  width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);
+  border-radius:10px;padding:10px 14px;color:#fff;font-size:14px;
+  font-family:"DM Sans",sans-serif;outline:none;
+  transition:border-color .2s;box-sizing:border-box;
+}
+#pem-name-input:focus{border-color:var(--gold)}
+#pem-name-input::placeholder{color:rgba(255,255,255,.35)}
 .pm-save-btn{
   background:linear-gradient(135deg,var(--gold),var(--gl));color:#000;
   border:none;border-radius:10px;padding:10px 18px;font-size:13px;
@@ -1561,6 +1774,251 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
 .av-item img{width:100%;height:100%;object-fit:cover;display:block}
 .av-label{font-size:9px;color:rgba(255,255,255,.45);text-align:center;
   margin-top:3px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ═══ PANTALLA CUENTA (estilo Crunchyroll) ═══ */
+#account-modal{
+  position:fixed;inset:0;z-index:960;background:#07070d;
+  display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
+#account-modal.on{display:block;animation:mvin .22s ease}
+.acc-screen{padding-bottom:96px;min-height:100%;}
+.acc-top{
+  display:flex;align-items:center;gap:14px;padding:18px 16px;
+  position:absolute;top:0;left:0;right:0;background:transparent;z-index:5;
+  border-bottom:none;
+}
+.acc-top .acc-top-title{display:none}
+.acc-back{
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.12);color:#fff;width:34px;height:34px;
+  border-radius:50%;font-size:18px;cursor:pointer;display:grid;place-items:center;
+  backdrop-filter:blur(8px);
+}
+.acc-top-title{font-size:16px;font-weight:700;letter-spacing:.3px}
+
+/* ══ HERO ULTRA PREMIUM ══ */
+.acc-hero{
+  position:relative;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:60px 20px 36px;
+  overflow:hidden;
+  /* Fondo base oscuro profundo */
+  background:#07070d;
+}
+/* Capa 1: gradiente cinematográfico rojo-dorado */
+.acc-hero::before{
+  content:'';
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 120% 80% at 50% 0%,
+      rgba(201,168,76,.18)  0%,
+      rgba(229,9,20,.28)    25%,
+      rgba(120,5,10,.22)    50%,
+      transparent           75%),
+    radial-gradient(ellipse 80% 60% at 20% 40%,
+      rgba(229,9,20,.12) 0%,
+      transparent 70%),
+    radial-gradient(ellipse 80% 60% at 80% 40%,
+      rgba(201,168,76,.10) 0%,
+      transparent 70%);
+  pointer-events:none;
+}
+/* Capa 2: malla de estrellas + brillo superior */
+.acc-hero::after{
+  content:'';
+  position:absolute;inset:0;
+  background:
+    /* destellos finos en la parte alta */
+    radial-gradient(1.5px 1.5px at 22% 18%, rgba(255,255,255,.85), transparent),
+    radial-gradient(1px 1px at 55% 12%, rgba(201,168,76,.9), transparent),
+    radial-gradient(1.5px 1.5px at 78% 22%, rgba(255,255,255,.7), transparent),
+    radial-gradient(1px 1px at 38% 8%, rgba(255,255,255,.6), transparent),
+    radial-gradient(1px 1px at 88% 35%, rgba(201,168,76,.6), transparent),
+    radial-gradient(1.5px 1.5px at 10% 42%, rgba(255,255,255,.45), transparent),
+    radial-gradient(1px 1px at 66% 45%, rgba(255,255,255,.4), transparent),
+    /* línea de brillo dorado en la parte superior */
+    linear-gradient(to bottom,
+      rgba(201,168,76,.22) 0%,
+      rgba(201,168,76,.06) 8%,
+      transparent 20%);
+  pointer-events:none;
+}
+/* Línea separadora dorada brillante al fondo del hero */
+.acc-hero-divider{
+  position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(201,168,76,.15) 20%,
+    rgba(201,168,76,.55) 50%,
+    rgba(201,168,76,.15) 80%,
+    transparent 100%);
+}
+/* Resplandor ambiental detrás del avatar */
+.acc-avatar-glow{
+  position:absolute;
+  width:200px;height:200px;
+  border-radius:50%;
+  background:radial-gradient(circle,
+    rgba(229,9,20,.35)  0%,
+    rgba(201,168,76,.18) 40%,
+    transparent 70%);
+  top:50px;left:50%;transform:translateX(-50%);
+  filter:blur(24px);
+  pointer-events:none;
+  animation:accGlowPulse 4s ease-in-out infinite;
+}
+@keyframes accGlowPulse{
+  0%,100%{opacity:.7;transform:translateX(-50%) scale(1);}
+  50%{opacity:1;transform:translateX(-50%) scale(1.12);}
+}
+.acc-avatar-wrap{
+  position:relative;width:120px;height:120px;margin-bottom:16px;z-index:2;
+}
+.acc-avatar-wrap img{
+  width:100%;height:100%;border-radius:50%;object-fit:cover;
+  background:var(--bg2);
+  /* Anillo dorado multicapa premium */
+  border:2px solid transparent;
+  box-shadow:
+    0 0 0 2px rgba(201,168,76,.8),
+    0 0 0 4px rgba(201,168,76,.2),
+    0 0 20px rgba(201,168,76,.4),
+    0 0 40px rgba(229,9,20,.25),
+    0 8px 32px rgba(0,0,0,.8);
+}
+/* Arco decorativo dorado alrededor del avatar */
+.acc-avatar-ring{
+  position:absolute;inset:-6px;border-radius:50%;
+  background:conic-gradient(
+    from 120deg,
+    transparent 0%,
+    rgba(201,168,76,.0) 15%,
+    rgba(201,168,76,.7) 40%,
+    rgba(240,217,163,.9) 50%,
+    rgba(201,168,76,.7) 60%,
+    rgba(201,168,76,.0) 85%,
+    transparent 100%
+  );
+  animation:accRingSpin 8s linear infinite;
+  pointer-events:none;
+}
+@keyframes accRingSpin{to{transform:rotate(360deg);}}
+.acc-pencil{
+  position:absolute;bottom:2px;right:2px;width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,#fff 0%,#e8e8e8 100%);
+  border:2.5px solid #07070d;
+  box-shadow:0 2px 8px rgba(0,0,0,.6);
+  display:grid;place-items:center;cursor:pointer;z-index:3;
+}
+.acc-name{
+  font-size:20px;font-weight:700;color:#fff;margin-bottom:4px;z-index:2;position:relative;
+  text-shadow:0 2px 12px rgba(0,0,0,.8);
+  letter-spacing:.3px;
+}
+.acc-email{
+  font-size:12.5px;color:rgba(255,255,255,.4);z-index:2;position:relative;
+}
+.acc-section-label{
+  font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.8px;
+  text-transform:uppercase;padding:22px 20px 8px;
+}
+.acc-block{background:rgba(255,255,255,.035);margin:0 16px;border-radius:14px;overflow:hidden;}
+.acc-row{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:16px 18px;font-size:14px;color:#fff;cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.acc-row:last-child{border-bottom:none}
+.acc-row-right{display:flex;align-items:center;gap:8px;}
+.acc-val{font-size:12.5px;color:rgba(255,255,255,.45);text-align:right;max-width:150px;}
+.acc-val-gold{color:var(--gold);font-weight:700;}
+.acc-chev{color:rgba(255,255,255,.3);font-size:16px;}
+.acc-row-danger{color:#ff5a5a;cursor:pointer;}
+.acc-switch{position:relative;display:inline-block;width:42px;height:24px;flex-shrink:0;}
+.acc-switch input{opacity:0;width:0;height:0;}
+.acc-switch-track{
+  position:absolute;inset:0;background:rgba(255,255,255,.18);border-radius:24px;
+  transition:.2s;cursor:pointer;
+}
+.acc-switch-track::before{
+  content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;
+  background:#fff;border-radius:50%;transition:.2s;
+}
+.acc-switch input:checked + .acc-switch-track{background:var(--gold);}
+.acc-switch input:checked + .acc-switch-track::before{transform:translateX(18px);}
+.acc-email-row{display:flex;gap:8px;padding:14px;}
+#acc-email-input{
+  flex:1;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);
+  border-radius:10px;padding:10px 14px;color:#fff;font-size:14px;
+  font-family:"DM Sans",sans-serif;outline:none;transition:border-color .2s;
+}
+#acc-email-input:focus{border-color:var(--gold)}
+.acc-email-save{
+  background:linear-gradient(135deg,var(--gold),var(--gl));color:#000;
+  border:none;border-radius:10px;padding:10px 16px;font-size:13px;
+  font-weight:700;cursor:pointer;white-space:nowrap;
+}
+
+/* ═══ SELECTOR DE PERFILES ═══ */
+#profile-select-screen{
+  position:fixed;inset:0;z-index:9990;background:#070707;
+  display:none;align-items:center;justify-content:center;overflow-y:auto;
+  padding:30px 16px;
+}
+#profile-select-screen.on{display:flex;animation:mvin .25s ease}
+.psel-wrap{width:100%;max-width:520px;display:flex;flex-direction:column;align-items:center;}
+.psel-title{
+  font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;color:#fff;
+  margin-bottom:28px;text-align:center;
+}
+.psel-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:18px 14px;width:100%;
+}
+.psel-item{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;}
+.psel-avatar{
+  width:100%;aspect-ratio:1;border-radius:14px;overflow:hidden;background:var(--bg2);
+  border:2.5px solid transparent;transition:border-color .2s,transform .2s;
+  display:flex;align-items:center;justify-content:center;position:relative;
+}
+.psel-item:hover .psel-avatar{transform:scale(1.05);border-color:var(--gold);}
+.psel-avatar img{width:100%;height:100%;object-fit:cover;}
+.psel-pin-icon{
+  position:absolute;top:5px;right:5px;width:18px;height:18px;border-radius:50%;
+  background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;
+}
+.psel-name{font-size:13px;color:rgba(255,255,255,.75);text-align:center;}
+.psel-add .psel-avatar{
+  border:2px dashed rgba(255,255,255,.25);font-size:30px;color:rgba(255,255,255,.4);
+}
+.psel-pin-box{
+  margin-top:30px;width:100%;max-width:280px;background:rgba(255,255,255,.05);
+  border-radius:16px;padding:22px 20px;display:flex;flex-direction:column;align-items:center;
+}
+.psel-pin-title{font-size:14px;color:#fff;margin-bottom:14px;font-weight:600;}
+#psel-pin-input{
+  width:100%;text-align:center;letter-spacing:8px;font-size:20px;
+  background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);
+  border-radius:10px;padding:10px;color:#fff;outline:none;box-sizing:border-box;
+}
+#psel-pin-input:focus{border-color:var(--gold)}
+.psel-pin-error{font-size:12px;color:#ff5a5a;margin-top:8px;display:none;}
+.psel-pin-error.show{display:block;}
+.psel-pin-actions{display:flex;gap:10px;width:100%;margin-top:16px;}
+.psel-pin-cancel,.psel-pin-confirm{
+  flex:1;padding:10px;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;
+}
+.psel-pin-cancel{background:rgba(255,255,255,.1);color:#fff;}
+.psel-pin-confirm{background:linear-gradient(135deg,var(--gold),var(--gl));color:#000;}
+
+/* Modal crear/editar perfil */
+#profile-edit-modal{
+  position:fixed;inset:0;z-index:980;background:rgba(0,0,0,.88);
+  display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px);
+}
+#profile-edit-modal.on{display:flex;animation:mvin .22s ease}
+.pem-delete-btn{
+  width:100%;padding:12px;background:rgba(255,90,90,.12);border:1px solid rgba(255,90,90,.3);
+  color:#ff5a5a;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;
+}
 
 /* ═══ TOP 10 ═══ */
 /* ╔══════════════════════════════════════════════════════╗
@@ -2170,7 +2628,18 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
 
 </style>
 </head>
-<body>
+<body class="ldr-lock">
+<script>document.documentElement.classList.add('ldr-lock');window.scrollTo(0,0);
+(function(){
+  function blockScroll(e){ e.preventDefault(); }
+  document.addEventListener('touchmove', function(e){
+    if(document.documentElement.classList.contains('ldr-lock')) blockScroll(e);
+  }, {passive:false});
+  document.addEventListener('wheel', function(e){
+    if(document.documentElement.classList.contains('ldr-lock')) blockScroll(e);
+  }, {passive:false});
+})();
+</script>
 
 
 <!-- SVG defs para gradientes Top 10 -->
@@ -2310,6 +2779,55 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
   </div>
 </div>
 
+<!-- ══ SELECTOR DE PERFILES (tipo Netflix) ══ -->
+<div id="profile-select-screen">
+  <div class="psel-wrap">
+    <div class="psel-title">¿Quién está viendo?</div>
+    <div id="psel-grid" class="psel-grid"></div>
+    <div class="psel-pin-box" id="psel-pin-box" style="display:none;">
+      <div class="psel-pin-title">Ingresa tu PIN</div>
+      <input id="psel-pin-input" type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="off"/>
+      <div id="psel-pin-error" class="psel-pin-error">PIN incorrecto</div>
+      <div class="psel-pin-actions">
+        <button class="psel-pin-cancel" onclick="closePselPin()">Cancelar</button>
+        <button class="psel-pin-confirm" onclick="confirmPselPin()">Entrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL CREAR / EDITAR PERFIL (con PIN propio) ══ -->
+<div id="profile-edit-modal">
+  <div class="pmodal">
+    <div class="pm-header">
+      <div class="pm-title" id="pem-title">Nuevo perfil</div>
+      <button class="pm-close" onclick="closeProfileEditModal()">✕</button>
+    </div>
+    <div class="pm-section">
+      <div class="pm-label">Nombre</div>
+      <div class="pm-name-row">
+        <input id="pem-name-input" type="text" placeholder="Escribe un nombre…" maxlength="20" autocomplete="off"/>
+      </div>
+    </div>
+    <div class="pm-section">
+      <div class="pm-label">Avatar</div>
+      <div class="av-grid" id="pem-av-grid"></div>
+    </div>
+    <div class="pm-section">
+      <div class="pm-label">PIN (opcional, solo para este perfil)</div>
+      <input id="pem-pin-input" type="password" inputmode="numeric" maxlength="4" placeholder="4 dígitos, déjalo vacío para no usar PIN"
+        style="width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:10px;
+               padding:10px 14px;color:#fff;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;box-sizing:border-box;"/>
+    </div>
+    <div class="pm-section" style="padding-bottom:6px;">
+      <button class="pm-save-btn" style="width:100%;padding:13px;" onclick="savePerfilEdit()">Guardar perfil</button>
+    </div>
+    <div class="pm-section" id="pem-delete-wrap" style="display:none;padding-bottom:18px;">
+      <button class="pem-delete-btn" onclick="deleteCurrentEditingProfile()">Eliminar este perfil</button>
+    </div>
+  </div>
+</div>
+
 <header id="hdr">
   <!-- Logo AM icono nave espacial -->
   <div class="am-icon-wrap">
@@ -2408,11 +2926,19 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
 
 <!-- Barra de navegación inferior fija -->
 <nav id="bottom-nav" style="position:fixed;bottom:0;left:0;right:0;z-index:850;background:rgba(10,10,10,.97);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.12);display:flex;align-items:flex-start;justify-content:space-between;padding:12px 24px 0;padding-bottom:max(16px,env(safe-area-inset-bottom));">
+  <!-- Inicio: casita -->
+  <div id="nav-inicio-btn" onclick="goInicio()" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+    <svg id="nav-inicio-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3.5 11.2 12 4l8.5 7.2" stroke="rgba(255,255,255,.85)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M5.5 9.8V19a1 1 0 0 0 1 1h3.2v-5.2a1 1 0 0 1 1-1h2.6a1 1 0 0 1 1 1V20h3.2a1 1 0 0 0 1-1V9.8" fill="rgba(255,255,255,.85)" stroke="rgba(255,255,255,.85)" stroke-width="1.2" stroke-linejoin="round"/>
+    </svg>
+    <span style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.3px;">INICIO</span>
+  </div>
   <!-- Lado izquierdo: campana de notificaciones -->
-  <div onclick="openNotifications()" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;position:relative;">
+  <div id="nav-avisos-btn" onclick="openNotifications()" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;">
     <div style="position:relative;width:26px;height:26px;">
       <!-- Campana SVG -->
-      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg id="nav-avisos-icon" viewBox="0 0 24 24" width="26" height="26" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 2.5C8.97 2.5 6.5 4.97 6.5 8v.5C5.1 9.3 4 10.55 4 12.1V17h16v-4.9c0-1.55-1.1-2.8-2.5-3.6V8c0-3.03-2.47-5.5-5.5-5.5z" fill="rgba(255,255,255,.85)"></path>
         <path d="M10 17c0 1.1.9 2 2 2s2-.9 2-2" stroke="rgba(255,255,255,.85)" stroke-width="1.5" fill="none" stroke-linecap="round"></path>
       </svg>
@@ -2424,26 +2950,36 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
   <!-- Centro: Botón Mi Lista -->
   <div id="nav-mylist-btn" onclick="activarMiLista()" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
     <svg id="nav-mylist-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="3" y="5" width="18" height="2" rx="1" fill="rgba(255,255,255,.55)"></rect>
-      <rect x="3" y="11" width="13" height="2" rx="1" fill="rgba(255,255,255,.55)"></rect>
-      <rect x="3" y="17" width="10" height="2" rx="1" fill="rgba(255,255,255,.55)"></rect>
+      <rect id="mylist-line1" x="3" y="5" width="18" height="2" rx="1" fill="rgba(255,255,255,.55)"></rect>
+      <rect id="mylist-line2" x="3" y="11" width="13" height="2" rx="1" fill="rgba(255,255,255,.55)"></rect>
+      <rect id="mylist-line3" x="3" y="17" width="10" height="2" rx="1" fill="rgba(255,255,255,.55)"></rect>
       <circle cx="20" cy="17" r="3.5" fill="rgba(255,255,255,.3)"></circle>
       <path d="M18.8 17l.8.8 1.6-1.6" stroke="rgba(255,255,255,.5)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
     </svg>
     <span id="nav-mylist-label" style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.3px;">MI LISTA</span>
   </div>
   <!-- Centro-derecho: Próximamente -->
-  <div onclick="openProximamente()" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <div id="nav-pronto-btn" onclick="openProximamente()" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+    <svg id="nav-pronto-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="12" cy="12" r="9.5" stroke="rgba(255,255,255,.75)" stroke-width="1.6"/>
-      <polyline points="12,7 12,12.5 15.5,15" stroke="rgba(255,255,255,.75)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <polyline id="pronto-hand" points="12,7 12,12.5 15.5,15" stroke="rgba(255,255,255,.75)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
       <circle cx="18.5" cy="5.5" r="3.5" fill="#e50914"/>
       <path d="M17.5 5.5h2M18.5 4.5v2" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>
     </svg>
     <span style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.3px;">PRONTO</span>
   </div>
+  <!-- Explorar -->
+  <div id="nav-explorar-btn" onclick="openExplorar()" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+    <svg id="nav-explorar-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect id="explorar-sq1" x="3" y="3" width="7" height="7" rx="1.5" fill="rgba(255,255,255,.55)" stroke="rgba(255,255,255,.55)" stroke-width="0"/>
+      <rect id="explorar-sq2" x="14" y="3" width="7" height="7" rx="1.5" fill="rgba(255,255,255,.55)" stroke="rgba(255,255,255,.55)" stroke-width="0"/>
+      <rect id="explorar-sq3" x="3" y="14" width="7" height="7" rx="1.5" fill="rgba(255,255,255,.55)" stroke="rgba(255,255,255,.55)" stroke-width="0"/>
+      <rect id="explorar-sq4" x="14" y="14" width="7" height="7" rx="1.5" fill="rgba(255,255,255,.55)" stroke="rgba(255,255,255,.55)" stroke-width="0"/>
+    </svg>
+    <span id="nav-explorar-label" style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.3px;">EXPLORAR</span>
+  </div>
   <!-- Lado derecho: perfil -->
-  <div id="profile-area" onclick="openProfileModal()" title="Mi perfil" style="display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0;">
+  <div id="profile-area" onclick="openAccountModal()" title="Mi perfil" style="display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0;">
     <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:1px;">
       <span id="badge-name" style="font-size:11px;font-weight:700;color:#fff;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:none;line-height:1.2;"></span>
       <span style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.3px;">MI PERFIL</span>
@@ -2455,6 +2991,168 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
     </div>
   </div>
 </nav>
+
+<style>
+/* ══ Animaciones de tap — nav inferior ══ */
+
+/* INICIO — la casita rebota */
+@keyframes houseBounce{
+  0%{transform:translateY(0) scale(1);}
+  30%{transform:translateY(-4px) scale(1.12);}
+  55%{transform:translateY(0) scale(.94);}
+  80%{transform:translateY(-1.5px) scale(1.04);}
+  100%{transform:translateY(0) scale(1);}
+}
+#nav-inicio-icon.tapped,#acc-nav-inicio-icon.tapped{transform-origin:50% 70%;animation:houseBounce .55s ease;}
+
+/* AVISOS — campana se sacude */
+@keyframes bellRing{
+  0%{transform:rotate(0deg);}
+  15%{transform:rotate(18deg);}
+  30%{transform:rotate(-16deg);}
+  45%{transform:rotate(12deg);}
+  60%{transform:rotate(-9deg);}
+  75%{transform:rotate(5deg);}
+  100%{transform:rotate(0deg);}
+}
+#nav-avisos-icon.tapped{transform-origin:50% 10%;animation:bellRing .6s ease;}
+
+/* MI LISTA — líneas se deslizan */
+@keyframes lineSweep1{0%{transform:translateX(0);}40%{transform:translateX(4px);}100%{transform:translateX(0);}}
+@keyframes lineSweep2{0%{transform:translateX(0);}40%{transform:translateX(-5px);}100%{transform:translateX(0);}}
+@keyframes lineSweep3{0%{transform:translateX(0);}40%{transform:translateX(6px);}100%{transform:translateX(0);}}
+#mylist-line1.tapped{animation:lineSweep1 .45s ease;}
+#mylist-line2.tapped{animation:lineSweep2 .45s ease .05s;}
+#mylist-line3.tapped{animation:lineSweep3 .45s ease .1s;}
+
+/* PRONTO — manecila del reloj gira */
+@keyframes handTick{
+  0%{transform:rotate(0deg);}
+  100%{transform:rotate(360deg);}
+}
+#pronto-hand.tapped{transform-origin:12px 12px;transform-box:fill-box;animation:handTick .5s ease-out;}
+
+/* EXPLORAR — cuadros se vacían y se rellenan */
+@keyframes squareEmpty{
+  0%{fill-opacity:1;stroke-width:0;}
+  50%{fill-opacity:0;stroke-width:1.6;}
+  100%{fill-opacity:1;stroke-width:0;}
+}
+#explorar-sq1.tapped{animation:squareEmpty .6s ease;}
+#explorar-sq2.tapped{animation:squareEmpty .6s ease .06s;}
+#explorar-sq3.tapped{animation:squareEmpty .6s ease .12s;}
+#explorar-sq4.tapped{animation:squareEmpty .6s ease .18s;}
+</style>
+
+<script>
+(function(){
+  function pulse(el, dur){
+    if(!el) return;
+    el.classList.remove('tapped');
+    void el.offsetWidth; /* reinicia animación si se toca rápido varias veces */
+    el.classList.add('tapped');
+    setTimeout(function(){ el.classList.remove('tapped'); }, dur || 700);
+  }
+  /* Pone en rojo el ícono + etiqueta de un botón del nav al tocarlo, y lo regresa a su color original */
+  window.flashRed = function(target, dur){
+    var btn = (typeof target === 'string') ? document.getElementById(target) : target;
+    if(!btn) return;
+    var els = btn.querySelectorAll('path,rect,circle,polyline,span');
+    els.forEach(function(el){
+      if(el.tagName.toLowerCase() === 'span'){
+        if(el.dataset.origColor === undefined) el.dataset.origColor = el.style.color || '';
+        el.style.color = 'var(--red)';
+      } else {
+        var fill = el.getAttribute('fill');
+        var stroke = el.getAttribute('stroke');
+        if(fill && fill !== 'none'){
+          if(el.dataset.origFill === undefined) el.dataset.origFill = fill;
+          el.setAttribute('fill', 'var(--red)');
+        }
+        if(stroke && stroke !== 'none'){
+          if(el.dataset.origStroke === undefined) el.dataset.origStroke = stroke;
+          el.setAttribute('stroke', 'var(--red)');
+        }
+      }
+    });
+    setTimeout(function(){
+      els.forEach(function(el){
+        if(el.tagName.toLowerCase() === 'span'){
+          if(el.dataset.origColor !== undefined) el.style.color = el.dataset.origColor;
+        } else {
+          if(el.dataset.origFill !== undefined) el.setAttribute('fill', el.dataset.origFill);
+          if(el.dataset.origStroke !== undefined) el.setAttribute('stroke', el.dataset.origStroke);
+        }
+      });
+    }, dur || 500);
+  };
+  /* Reemplaza el onclick inline por: animar primero, abrir panel un poco después,
+     así el ícono se ve moverse antes de que el panel lo tape. */
+  function bindDelayed(btnId, originalFnName, animateFn, delay){
+    var btn = document.getElementById(btnId);
+    if(!btn) return;
+    btn.removeAttribute('onclick');
+    btn.addEventListener('click', function(){
+      animateFn();
+      setTimeout(function(){
+        var fn = window[originalFnName];
+        if(typeof fn === 'function') fn();
+      }, delay);
+    });
+  }
+  bindDelayed('nav-avisos-btn', 'openNotifications', function(){
+    pulse(document.getElementById('nav-avisos-icon'), 650);
+    flashRed('nav-avisos-btn', 650);
+  }, 260);
+  /* Inicio no abre panel — la animación se ve de inmediato, sin delay */
+  var inicioBtn = document.getElementById('nav-inicio-btn');
+  if(inicioBtn){
+    inicioBtn.addEventListener('click', function(){
+      pulse(document.getElementById('nav-inicio-icon'), 550);
+      flashRed('nav-inicio-btn', 550);
+    }, {passive:true});
+  }
+  bindDelayed('nav-pronto-btn', 'openProximamente', function(){
+    pulse(document.getElementById('pronto-hand'), 550);
+    flashRed('nav-pronto-btn', 550);
+  }, 220);
+  bindDelayed('nav-explorar-btn', 'openExplorar', function(){
+    pulse(document.getElementById('explorar-sq1'), 800);
+    pulse(document.getElementById('explorar-sq2'), 800);
+    pulse(document.getElementById('explorar-sq3'), 800);
+    pulse(document.getElementById('explorar-sq4'), 800);
+    flashRed('nav-explorar-btn', 800);
+  }, 280);
+
+  /* Mi Lista no abre panel — la animación se ve de inmediato, sin delay */
+  var mlBtn = document.getElementById('nav-mylist-btn');
+  if(mlBtn){
+    mlBtn.addEventListener('click', function(){
+      pulse(document.getElementById('mylist-line1'), 600);
+      pulse(document.getElementById('mylist-line2'), 600);
+      pulse(document.getElementById('mylist-line3'), 600);
+      flashRed('nav-mylist-btn', 600);
+    }, {passive:true});
+  }
+
+  /* Mi Perfil — solo destello rojo, no tiene animación de forma */
+  var profBtn = document.getElementById('profile-area');
+  if(profBtn){
+    profBtn.addEventListener('click', function(){
+      flashRed('profile-area', 500);
+    }, {passive:true});
+  }
+
+  /* Botón Inicio dentro de la pantalla de Cuenta */
+  var accInicioBtn = document.getElementById('acc-nav-inicio-btn');
+  if(accInicioBtn){
+    accInicioBtn.addEventListener('click', function(){
+      pulse(document.getElementById('acc-nav-inicio-icon'), 550);
+      flashRed('acc-nav-inicio-btn', 550);
+    }, {passive:true});
+  }
+})();
+</script>
 
 <div class="pills">
   <button class="pill on"  onclick="filter(this,'all')">Inicio</button>
@@ -2479,16 +3177,18 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
         <div id="hlogotxt"></div>
       </div>
       <div id="htags"></div>
+      <div id="hrating" style="display:none"></div>
+      <div id="hdesc" style="display:none"></div>
       <div class="hbtns">
-        <button class="bplay" id="bplay">▶ Reproducir</button>
-        <button class="blist" id="blist">+ Mi lista</button>
+        <button class="bplay" id="bplay"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg> Reproducir</button>
+        <button class="blist" id="blist"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#e50914" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
       </div>
     </div>
-    <div class="hdots" id="hdots"></div>
     <!-- Poster portrait flotante — solo visible en tablet/laptop via CSS -->
     <img id="hposter-float" class="hposter-float" src="" alt=""/>
   </div>
 </div>
+<div class="hdots" id="hdots"></div>
 
 <div id="cnt-glow"></div>
 <div id="cnt"></div>
@@ -2906,10 +3606,16 @@ function rnd(){ return Math.floor(82+Math.random()*17); }
 
 
 /* ═══ HERO ═══ */
+var HERO_DURATION = 9000; /* ms — debe coincidir con setInterval */
 function setDots(n, active) {
   var el=document.getElementById("hdots"); el.innerHTML="";
   for(var i=0;i<n;i++){
-    var d=document.createElement("button"); d.className="hdot"+(i===active?" on":"");
+    var cls = 'hdot';
+    if(i < active) cls += ' done';
+    if(i === active) cls += ' on';
+    var d=document.createElement("button");
+    d.className=cls;
+    d.style.setProperty('--hdot-dur', (HERO_DURATION/1000)+'s');
     d.onclick=(function(j){return function(){goHero(j);};})(i);
     el.appendChild(d);
   }
@@ -2926,6 +3632,10 @@ function clearHeroText() {
   logoEl.onload = null; logoEl.onerror = null;
   logoEl.src = ""; logoEl.style.display = "none";
   txtEl.textContent = ""; txtEl.style.display = "none";
+  var ratingEl = document.getElementById('hrating');
+  var descEl   = document.getElementById('hdesc');
+  if(ratingEl){ ratingEl.innerHTML=''; ratingEl.style.display='none'; }
+  if(descEl){ descEl.textContent=''; descEl.style.display='none'; }
 
   /* ── Crossfade: clonar imagen actual como capa de salida ── */
   if(hcard && imgEl.src && imgEl.src !== window.location.href){
@@ -2962,6 +3672,39 @@ async function showHero(item, ci, token) {
   document.getElementById("bplay").onclick = function(){openModal(ci);};
   document.getElementById("blist").onclick = function(){toggleList(ci,this);};
   _updateHeroListBtn(ci);
+
+  /* Cargar sinopsis del hero */
+  (function(tok, it){
+    getBannerData(it.t, it.c, it.i).then(function(data){
+      if(tok !== heroToken) return;
+      var ratingEl = document.getElementById('hrating');
+      var descEl   = document.getElementById('hdesc');
+      /* Rating / clasificación */
+      var isTV = (it.c==='series'||it.c==='anime'||it.c==='anime_dob'||it.c==='anime_am'||it.c==='anime_inf'||it.c==='disney_series'||it.c==='donghua');
+      var audioTag = isTV ? 'Sub Español' : 'Dob | Sub';
+      /* Clasificación por categoría */
+      var ageMap = {
+        'pelicula':'PG','series':'TV-14','anime':'TV-14','anime_dob':'TV-14',
+        'anime_am':'TV-MA','anime_inf':'G','disney':'G','disney_series':'G',
+        'marvel':'PG-13','terror':'TV-MA','romance':'TV-14','accion':'TV-14',
+        'comedia':'PG','animacion':'G','cienciaficcion':'PG-13','suspenso':'TV-14',
+        'drama':'TV-14','donghua':'TV-14','donghua_movie':'TV-14'
+      };
+      var ageRating = ageMap[it.c] || 'TV-14';
+      if(ratingEl){
+        ratingEl.innerHTML =
+          '<span class="hrate-box">'+ageRating+'</span>'+
+          '<span class="hrate-dot"></span>'+
+          '<span>'+audioTag+'</span>';
+        ratingEl.style.display='flex';
+      }
+      /* Sinopsis */
+      if(descEl && data && data.overview){
+        descEl.textContent = data.overview;
+        descEl.style.display='block';
+      }
+    });
+  })(token, item);
 
   /* Detectar modo visual ANTES de los fetches para saber qué pedir */
   var isTabletPlus = window.innerWidth >= 768 || window.innerHeight >= 768;
@@ -3093,7 +3836,7 @@ function goHero(idx) {
   heroIdx = idx;
   heroToken++;                                     /* invalida cualquier showHero anterior */
   clearHeroText();                                 /* limpia DOM inmediatamente */
-  clearInterval(heroTmr); heroTmr=setInterval(nextHero,9000);
+  clearInterval(heroTmr); heroTmr=setInterval(nextHero,HERO_DURATION);
   setDots(heroArr.length, idx);
   showHero(heroArr[idx].item, heroArr[idx].ci, heroToken);
 }
@@ -3507,7 +4250,9 @@ function toggleList(ci, btn) {
     if(btn){
       btn.classList.remove("on");
       if(isBannerBtn){
-        btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="24" height="24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
+        btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#e50914" stroke-width="2" width="22" height="22"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
+      } else if(btn.id==='blist'){
+        btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#e50914" stroke-width="2" width="22" height="22"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
       } else {
         btn.innerHTML="+ Mi lista";
       }
@@ -3518,7 +4263,9 @@ function toggleList(ci, btn) {
     if(btn){
       btn.classList.add("on");
       if(isBannerBtn){
-        btn.innerHTML='<svg viewBox="0 0 24 24" fill="#e50914" stroke="#e50914" stroke-width="2.2" width="24" height="24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
+        btn.innerHTML='<svg viewBox="0 0 24 24" fill="#e50914" stroke="#e50914" stroke-width="2" width="22" height="22"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
+      } else if(btn.id==='blist'){
+        btn.innerHTML='<svg viewBox="0 0 24 24" fill="#e50914" stroke="#e50914" stroke-width="2" width="22" height="22"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
       } else {
         btn.innerHTML="\u2713 En mi lista";
       }
@@ -3533,11 +4280,9 @@ function toggleList(ci, btn) {
 function _updateHeroListBtn(ci) {
   var btn = document.getElementById("blist"); if(!btn) return;
   var t = CATALOG[ci]&&CATALOG[ci].t;
-  if(t && myList.has(t)){
-    btn.classList.add("on"); btn.innerHTML="\u2713 En mi lista";
-  } else {
-    btn.classList.remove("on"); btn.innerHTML="+ Mi lista";
-  }
+  var svgFill = (t && myList.has(t)) ? '#e50914' : 'none';
+  if(t && myList.has(t)){ btn.classList.add("on"); } else { btn.classList.remove("on"); }
+  btn.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="'+svgFill+'" stroke="#e50914" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
 }
 
 /* ═══ SECCIÓN MI LISTA ═══ */
@@ -3621,6 +4366,8 @@ function _renderMyListSection(show){
 
   /* 2) Cards de items externos (guardados desde Supergenerador) */
   externalItems.forEach(function(it){
+    var wrap = document.createElement('div');
+    wrap.className = 'card-wrap';
     var card = document.createElement('div');
     card.className = 'card';
     card.style.cursor = 'pointer';
@@ -3668,8 +4415,15 @@ function _renderMyListSection(show){
     acts.appendChild(brem);
     ov.appendChild(acts);
     card.appendChild(ov);
-
-    grid.appendChild(card);
+    wrap.appendChild(card);
+    var footerExt=document.createElement('div'); footerExt.className='card-footer';
+    var tbExt=document.createElement('div'); tbExt.className='ctitle-below'; tbExt.textContent=it.title||'';
+    var dotsExt=document.createElement('button'); dotsExt.className='cdots'; dotsExt.title='Más opciones';
+    dotsExt.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>';
+    (function(extIt){ dotsExt.onclick=function(e){ e.stopPropagation(); toggleCardCtx(e,null,{t:extIt.title,h:extIt.url||extIt.h||'',i:extIt.poster||''}); }; })(it);
+    footerExt.appendChild(tbExt); footerExt.appendChild(dotsExt);
+    wrap.appendChild(footerExt);
+    grid.appendChild(wrap);
   });
 
   sec.appendChild(grid);
@@ -3694,7 +4448,7 @@ function confirmVaciarList(){
   closeVaciarModal();
   _renderMyListSection(true);
   var blist=document.getElementById('blist');
-  if(blist){blist.classList.remove('on');blist.innerHTML='+ Mi lista';}
+  if(blist){blist.classList.remove('on');blist.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#e50914" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';}
   toast('✓ Lista vaciada');
 }
 window.addEventListener('click',function(e){
@@ -3734,7 +4488,16 @@ function makeCard(ci) {
   var pct=document.createElement("span"); pct.className="cpct"; pct.textContent=rnd()+"%";
   acts.appendChild(bpl); acts.appendChild(badd); acts.appendChild(pct);
   ov.appendChild(acts); card.appendChild(ov);
-  return card;
+  var wrap=document.createElement("div"); wrap.className="card-wrap";
+  wrap.appendChild(card);
+  var footer=document.createElement("div"); footer.className="card-footer";
+  var tb=document.createElement("div"); tb.className="ctitle-below"; tb.textContent=item.t;
+  var dots=document.createElement("button"); dots.className="cdots"; dots.title="Más opciones";
+  dots.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>';
+  dots.onclick=(function(j,it2){return function(e){e.stopPropagation();toggleCardCtx(e,j,it2);};})(ci,item);
+  footer.appendChild(tb); footer.appendChild(dots);
+  wrap.appendChild(footer);
+  return wrap;
 }
 
 /* ═══ PILLS ═══ */
@@ -3995,7 +4758,7 @@ function closeVertodo(){
                   (_isTV ? 'Comenzar E1' : 'Ver ahora')+
                 '</button>'+
                 '<button class="cr-banner-save'+(myList.has(_it.t)?' on':'')+'" onclick="event.stopPropagation();toggleList('+_ci+',this)">'+
-                  '<svg viewBox="0 0 24 24" fill="'+(myList.has(_it.t)?'#e50914':'none')+'" stroke="'+(myList.has(_it.t)?'#e50914':'currentColor')+'" stroke-width="2.2" width="24" height="24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>'+
+                  '<svg viewBox="0 0 24 24" fill="'+(myList.has(_it.t)?'#e50914':'none')+'" stroke="#e50914" stroke-width="2" width="22" height="22"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>'+
                 '</button>'+
               '</div>'+
             '</div>';
@@ -4074,7 +4837,7 @@ function closeVertodo(){
   _endEl.id = 'inf-end';
   _endEl.innerHTML =
     '<div id="inf-end-txt">Has llegado al final del feed.</div>'+
-    '<button id="inf-end-btn" onclick="window.scrollTo({top:0,behavior:\'smooth\'})">Ver todo</button>';
+    '<button id="inf-end-btn" onclick="openExplorar()">Explorar todo el catálogo</button>';
   cnt.appendChild(_endEl);
 
   /* ── Sentinel invisible para el observer ── */
@@ -4474,7 +5237,175 @@ function closeVertodo(){
   </div>
 </div>
 
+<!-- MODAL CERRAR SESIÓN -->
+<div id="logout-modal">
+  <div class="cm-box">
+    <div class="cm-icon-wrap">
+      <div class="cm-icon">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+      </div>
+    </div>
+    <div class="cm-body">
+      <div class="cm-title">Cerrar <em>sesión</em></div>
+      <div class="cm-desc">Tendrás que ingresar tu código de acceso de nuevo<br>para volver a entrar a <strong style="color:rgba(255,255,255,.75)">AstroMovie</strong>.</div>
+      <div class="cm-btns">
+        <button class="cm-btn-del" onclick="confirmLogout()">Sí, cerrar sesión</button>
+        <button class="cm-btn-cancel" onclick="closeLogoutModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- PROFILE MODAL -->
+<!-- ══ PANTALLA CUENTA (estilo Crunchyroll) ══ -->
+<div id="account-modal">
+  <div class="acc-screen">
+    <div class="acc-top">
+      <button class="acc-back" onclick="closeAccountModal()">←</button>
+      <div class="acc-top-title">Cuenta</div>
+    </div>
+    <div class="acc-hero">
+      <!-- Glow ambiental detrás del avatar -->
+      <div class="acc-avatar-glow"></div>
+      <div class="acc-avatar-wrap">
+        <!-- Arco decorativo giratorio -->
+        <div class="acc-avatar-ring"></div>
+        <img id="acc-avatar-img" src="" alt="" />
+        <button class="acc-pencil" onclick="openProfileModal()" title="Editar perfil">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19 3 20l1-4L16.5 3.5Z" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div id="acc-name" class="acc-name">—</div>
+      <div id="acc-email" class="acc-email">Agregar correo</div>
+      <!-- Línea separadora dorada -->
+      <div class="acc-hero-divider"></div>
+    </div>
+
+    <div class="acc-block">
+      <div class="acc-row" onclick="openChangeProfile()">
+        <span>Cambiar perfil</span><span class="acc-chev">›</span>
+      </div>
+      <div class="acc-row">
+        <span>PIN de perfil</span>
+        <label class="acc-switch">
+          <input type="checkbox" id="acc-pin-toggle" onchange="toggleAccPin(this)">
+          <span class="acc-switch-track"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="acc-section-label">Preferencias de contenido</div>
+    <div class="acc-block">
+      <div class="acc-row" onclick="cycleAccRestriction()">
+        <span>Restricciones de Contenido</span>
+        <span class="acc-row-right"><span id="acc-restriction-val" class="acc-val">16+</span><span class="acc-chev">›</span></span>
+      </div>
+      <div class="acc-row" onclick="cycleAccAudio()">
+        <span>Idioma del audio</span>
+        <span class="acc-row-right"><span id="acc-audio-val" class="acc-val">Español (América Latina)</span><span class="acc-chev">›</span></span>
+      </div>
+      <div class="acc-row" onclick="cycleAccSubs()">
+        <span>Idioma de los Subtítulos</span>
+        <span class="acc-row-right"><span id="acc-subs-val" class="acc-val">Español (América Latina)</span><span class="acc-chev">›</span></span>
+      </div>
+      <div class="acc-row">
+        <span>Mostrar Subtítulos Descriptivos</span>
+        <label class="acc-switch">
+          <input type="checkbox" id="acc-cc-toggle" checked onchange="toggleAccCC(this)">
+          <span class="acc-switch-track"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="acc-section-label">Correo</div>
+    <div class="acc-block">
+      <div class="acc-email-row">
+        <input id="acc-email-input" type="email" placeholder="tu@correo.com" autocomplete="off"/>
+        <button class="acc-email-save" onclick="saveAccEmail()">Guardar</button>
+      </div>
+    </div>
+
+    <div class="acc-section-label">Suscripción</div>
+    <div class="acc-block">
+      <div class="acc-row">
+        <span>Suscripción</span>
+        <span class="acc-row-right"><span id="acc-sub-val" class="acc-val acc-val-gold">Ultra Premium</span><span class="acc-chev">›</span></span>
+      </div>
+      <div class="acc-row">
+        <span>Notificaciones</span><span class="acc-chev">›</span>
+      </div>
+    </div>
+
+    <div class="acc-block">
+      <div class="acc-row acc-row-danger" onclick="logoutApp()">
+        <span>Cerrar sesión</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ Barra inferior de Cuenta (mismos íconos del nav principal) ══ -->
+  <nav style="position:fixed;bottom:0;left:0;right:0;z-index:970;background:rgba(10,10,10,.97);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.12);display:flex;align-items:flex-start;justify-content:space-between;padding:12px 24px 0;padding-bottom:max(16px,env(safe-area-inset-bottom));">
+    <div id="acc-nav-inicio-btn" onclick="closeAccountModal();goInicio();" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+      <svg id="acc-nav-inicio-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3.5 11.2 12 4l8.5 7.2" stroke="rgba(255,255,255,.85)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M5.5 9.8V19a1 1 0 0 0 1 1h3.2v-5.2a1 1 0 0 1 1-1h2.6a1 1 0 0 1 1 1V20h3.2a1 1 0 0 0 1-1V9.8" fill="rgba(255,255,255,.85)" stroke="rgba(255,255,255,.85)" stroke-width="1.2" stroke-linejoin="round"/>
+      </svg>
+      <span style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.3px;">INICIO</span>
+    </div>
+    <div onclick="flashRed(this,500);closeAccountModal();openNotifications();" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;">
+      <div style="position:relative;width:26px;height:26px;">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2.5C8.97 2.5 6.5 4.97 6.5 8v.5C5.1 9.3 4 10.55 4 12.1V17h16v-4.9c0-1.55-1.1-2.8-2.5-3.6V8c0-3.03-2.47-5.5-5.5-5.5z" fill="rgba(255,255,255,.85)"></path>
+          <path d="M10 17c0 1.1.9 2 2 2s2-.9 2-2" stroke="rgba(255,255,255,.85)" stroke-width="1.5" fill="none" stroke-linecap="round"></path>
+        </svg>
+      </div>
+      <span style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.3px;">AVISOS</span>
+    </div>
+    <div onclick="flashRed(this,500);closeAccountModal();activarMiLista();" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="5" width="18" height="2" rx="1" fill="rgba(255,255,255,.55)"></rect>
+        <rect x="3" y="11" width="13" height="2" rx="1" fill="rgba(255,255,255,.55)"></rect>
+        <rect x="3" y="17" width="10" height="2" rx="1" fill="rgba(255,255,255,.55)"></rect>
+        <circle cx="20" cy="17" r="3.5" fill="rgba(255,255,255,.3)"></circle>
+        <path d="M18.8 17l.8.8 1.6-1.6" stroke="rgba(255,255,255,.5)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+      </svg>
+      <span style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.3px;">MI LISTA</span>
+    </div>
+    <div onclick="flashRed(this,500);closeAccountModal();openProximamente();" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="9.5" stroke="rgba(255,255,255,.75)" stroke-width="1.6"/>
+        <polyline points="12,7 12,12.5 15.5,15" stroke="rgba(255,255,255,.75)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="18.5" cy="5.5" r="3.5" fill="#e50914"/>
+        <path d="M17.5 5.5h2M18.5 4.5v2" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      <span style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.3px;">PRONTO</span>
+    </div>
+    <div onclick="flashRed(this,500);closeAccountModal();openExplorar();" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="7" height="7" rx="1.5" fill="rgba(255,255,255,.55)"></rect>
+        <rect x="14" y="3" width="7" height="7" rx="1.5" fill="rgba(255,255,255,.55)"></rect>
+        <rect x="3" y="14" width="7" height="7" rx="1.5" fill="rgba(255,255,255,.55)"></rect>
+        <rect x="14" y="14" width="7" height="7" rx="1.5" fill="rgba(255,255,255,.55)"></rect>
+      </svg>
+      <span style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.3px;">EXPLORAR</span>
+    </div>
+    <div onclick="flashRed(this,400)" style="display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0;">
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:1px;">
+        <span style="font-size:9px;color:var(--gold);font-weight:700;letter-spacing:.3px;">MI PERFIL</span>
+      </div>
+      <div class="profile-badge" style="border-color:var(--gold)">
+        <img id="acc-nav-avatar" src="" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:none"/>
+        <svg id="acc-nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"></path></svg>
+      </div>
+    </div>
+  </nav>
+  </div>
+</div>
+
 <div id="profile-modal">
   <div class="pmodal">
     <div class="pm-header">
@@ -4557,13 +5488,312 @@ var currentAvatar  = lsGet('am_avatar');
 var currentName    = lsGet('am_name');
 var obSelectedAvatar = '';
 
+/* ═══ SISTEMA DE PERFILES MÚLTIPLES ═══ */
+var _pemEditingId = null; /* id del perfil que se está editando en profile-edit-modal, null = nuevo */
+var _pselPendingProfile = null; /* perfil que espera confirmación de PIN */
+
+function getProfiles(){
+  try{ return JSON.parse(lsGet('am_profiles') || '[]'); }catch(e){ return []; }
+}
+function saveProfiles(list){ lsSet('am_profiles', JSON.stringify(list)); }
+function getActiveProfileId(){ return lsGet('am_active_profile_id') || ''; }
+function setActiveProfileId(id){ lsSet('am_active_profile_id', id); }
+function getActiveProfile(){
+  var list = getProfiles();
+  var id = getActiveProfileId();
+  for(var i=0;i<list.length;i++){ if(list[i].id===id) return list[i]; }
+  return list[0] || null;
+}
+function genProfileId(){ return 'p_' + Date.now() + '_' + Math.floor(Math.random()*10000); }
+
+/* Migra el perfil único antiguo (am_name/am_avatar) a la nueva lista de perfiles, una sola vez. */
+function migrateLegacyProfile(){
+  var list = getProfiles();
+  if(list.length > 0) return; /* ya migrado o ya tiene perfiles */
+  if(!currentName && !currentAvatar) return; /* nada que migrar */
+  var p = {
+    id: genProfileId(),
+    name: currentName || 'Usuario',
+    avatar: currentAvatar || '',
+    pin: '',
+    restriction: lsGet('am_restriction') || '16+',
+    audioLang: lsGet('am_audio_lang') || 'Español (América Latina)',
+    subsLang: lsGet('am_subs_lang') || 'Español (América Latina)',
+    cc: lsGet('am_cc_on') === '' ? '1' : lsGet('am_cc_on'),
+    email: lsGet('am_email') || ''
+  };
+  list.push(p);
+  saveProfiles(list);
+  setActiveProfileId(p.id);
+}
+
+/* Aplica el perfil activo a las variables globales currentName/currentAvatar usadas en toda la app */
+function applyActiveProfileToGlobals(){
+  var p = getActiveProfile();
+  if(!p) return;
+  currentName   = p.name;
+  currentAvatar = p.avatar;
+  lsSet('am_name',   currentName);
+  lsSet('am_avatar', currentAvatar);
+  lsSet('am_restriction', p.restriction || '16+');
+  lsSet('am_audio_lang',  p.audioLang || 'Español (América Latina)');
+  lsSet('am_subs_lang',   p.subsLang  || 'Español (América Latina)');
+  lsSet('am_cc_on',       p.cc === undefined ? '1' : p.cc);
+  lsSet('am_email',       p.email || '');
+}
+
+/* Guarda los cambios de las variables globales actuales de vuelta al perfil activo en la lista */
+function syncGlobalsToActiveProfile(){
+  var list = getProfiles();
+  var id = getActiveProfileId();
+  for(var i=0;i<list.length;i++){
+    if(list[i].id===id){
+      list[i].name   = currentName;
+      list[i].avatar = currentAvatar;
+      list[i].restriction = lsGet('am_restriction') || '16+';
+      list[i].audioLang   = lsGet('am_audio_lang') || 'Español (América Latina)';
+      list[i].subsLang    = lsGet('am_subs_lang')  || 'Español (América Latina)';
+      list[i].cc          = lsGet('am_cc_on');
+      list[i].email       = lsGet('am_email') || '';
+      break;
+    }
+  }
+  saveProfiles(list);
+}
+
+/* ── Pantalla "¿Quién está viendo?" — solo se muestra si hay 2+ perfiles ── */
+function shouldShowProfileSelect(){
+  return getProfiles().length > 1;
+}
+
+function renderProfileSelectGrid(){
+  var grid = document.getElementById('psel-grid');
+  if(!grid) return;
+  grid.innerHTML = '';
+  var list = getProfiles();
+  list.forEach(function(p){
+    var item = document.createElement('div');
+    item.className = 'psel-item';
+    item.onclick = function(){ selectProfileFromScreen(p.id); };
+    var av = document.createElement('div');
+    av.className = 'psel-avatar';
+    if(p.avatar){
+      var img = document.createElement('img');
+      img.src = p.avatar; img.alt = p.name;
+      img.onerror = function(){ this.style.opacity='.2'; };
+      av.appendChild(img);
+    } else {
+      av.textContent = (p.name||'?')[0].toUpperCase();
+    }
+    if(p.pin){
+      var lock = document.createElement('div');
+      lock.className = 'psel-pin-icon';
+      lock.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M6 10V8a6 6 0 1 1 12 0v2" stroke="#fff" stroke-width="2" stroke-linecap="round"/><rect x="4" y="10" width="16" height="11" rx="2" fill="#fff"/></svg>';
+      av.appendChild(lock);
+    }
+    var name = document.createElement('div');
+    name.className = 'psel-name';
+    name.textContent = p.name;
+    item.appendChild(av); item.appendChild(name);
+    grid.appendChild(item);
+  });
+  /* Botón agregar perfil */
+  var addItem = document.createElement('div');
+  addItem.className = 'psel-item psel-add';
+  addItem.onclick = function(){ openProfileEditModal(null); };
+  var addAv = document.createElement('div');
+  addAv.className = 'psel-avatar';
+  addAv.textContent = '+';
+  var addName = document.createElement('div');
+  addName.className = 'psel-name';
+  addName.textContent = 'Agregar perfil';
+  addItem.appendChild(addAv); addItem.appendChild(addName);
+  grid.appendChild(addItem);
+}
+
+function showProfileSelectScreen(){
+  renderProfileSelectGrid();
+  document.getElementById('psel-pin-box').style.display = 'none';
+  document.getElementById('profile-select-screen').classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+function hideProfileSelectScreen(){
+  document.getElementById('profile-select-screen').classList.remove('on');
+  document.body.style.overflow = '';
+}
+
+function selectProfileFromScreen(id){
+  var list = getProfiles();
+  var p = null;
+  for(var i=0;i<list.length;i++){ if(list[i].id===id) p = list[i]; }
+  if(!p) return;
+  if(p.pin){
+    _pselPendingProfile = p;
+    document.getElementById('psel-pin-box').style.display = 'flex';
+    document.getElementById('psel-pin-error').classList.remove('show');
+    var input = document.getElementById('psel-pin-input');
+    input.value = '';
+    setTimeout(function(){ input.focus(); }, 50);
+  } else {
+    activateProfileAndEnter(p.id);
+  }
+}
+function closePselPin(){
+  _pselPendingProfile = null;
+  document.getElementById('psel-pin-box').style.display = 'none';
+}
+function confirmPselPin(){
+  if(!_pselPendingProfile) return;
+  var val = document.getElementById('psel-pin-input').value.trim();
+  if(val === _pselPendingProfile.pin){
+    var id = _pselPendingProfile.id;
+    _pselPendingProfile = null;
+    activateProfileAndEnter(id);
+  } else {
+    document.getElementById('psel-pin-error').classList.add('show');
+  }
+}
+
+function activateProfileAndEnter(id){
+  setActiveProfileId(id);
+  applyActiveProfileToGlobals();
+  applyBadge();
+  hideProfileSelectScreen();
+}
+
+/* ── Modal crear / editar perfil (usado tanto desde el selector como desde Cuenta) ── */
+var PEM_SELECTED_AVATAR = '';
+function buildPemAvatarGrid(){
+  var grid = document.getElementById('pem-av-grid');
+  if(!grid) return;
+  grid.innerHTML = '';
+  AVATARS.forEach(function(av, i){
+    var wrap = document.createElement('div');
+    var item = document.createElement('div');
+    item.className = 'av-item' + (av.url===PEM_SELECTED_AVATAR ? ' sel' : '');
+    item.style.cursor = 'pointer';
+    item.addEventListener('click', function(){
+      PEM_SELECTED_AVATAR = av.url;
+      document.querySelectorAll('#pem-av-grid .av-item').forEach(function(el,j){
+        el.classList.toggle('sel', j===i);
+      });
+    });
+    var img = document.createElement('img');
+    img.src=av.url; img.alt=av.label; img.loading='lazy';
+    img.onerror=function(){ this.style.opacity='.2'; };
+    item.appendChild(img);
+    var lbl = document.createElement('div');
+    lbl.className='av-label'; lbl.textContent=av.label;
+    wrap.appendChild(item); wrap.appendChild(lbl);
+    grid.appendChild(wrap);
+  });
+}
+
+function openProfileEditModal(profileId){
+  _pemEditingId = profileId;
+  var titleEl = document.getElementById('pem-title');
+  var nameInput = document.getElementById('pem-name-input');
+  var pinInput = document.getElementById('pem-pin-input');
+  var delWrap = document.getElementById('pem-delete-wrap');
+  if(profileId){
+    var list = getProfiles();
+    var p = null;
+    for(var i=0;i<list.length;i++){ if(list[i].id===profileId) p = list[i]; }
+    if(!p) return;
+    titleEl.textContent = 'Editar perfil';
+    nameInput.value = p.name;
+    pinInput.value = p.pin || '';
+    PEM_SELECTED_AVATAR = p.avatar || '';
+    delWrap.style.display = getProfiles().length > 1 ? 'block' : 'none';
+  } else {
+    titleEl.textContent = 'Nuevo perfil';
+    nameInput.value = '';
+    pinInput.value = '';
+    PEM_SELECTED_AVATAR = '';
+    delWrap.style.display = 'none';
+  }
+  buildPemAvatarGrid();
+  document.getElementById('profile-edit-modal').classList.add('on');
+}
+function closeProfileEditModal(){
+  document.getElementById('profile-edit-modal').classList.remove('on');
+}
+
+function savePerfilEdit(){
+  var nameVal = document.getElementById('pem-name-input').value.trim();
+  var pinVal  = document.getElementById('pem-pin-input').value.trim();
+  if(!nameVal){ toast('Escribe un nombre'); return; }
+  if(pinVal && !/^\d{4}$/.test(pinVal)){ toast('El PIN debe ser de 4 dígitos'); return; }
+  var list = getProfiles();
+  if(_pemEditingId){
+    for(var i=0;i<list.length;i++){
+      if(list[i].id === _pemEditingId){
+        list[i].name = nameVal;
+        list[i].avatar = PEM_SELECTED_AVATAR || list[i].avatar;
+        list[i].pin = pinVal;
+        break;
+      }
+    }
+  } else {
+    var newP = {
+      id: genProfileId(), name: nameVal, avatar: PEM_SELECTED_AVATAR, pin: pinVal,
+      restriction:'16+', audioLang:'Español (América Latina)', subsLang:'Español (América Latina)',
+      cc:'1', email:''
+    };
+    list.push(newP);
+    if(list.length === 1) setActiveProfileId(newP.id);
+  }
+  saveProfiles(list);
+  closeProfileEditModal();
+  /* Refrescar lo que esté visible */
+  if(document.getElementById('profile-select-screen').classList.contains('on')) renderProfileSelectGrid();
+  if(getActiveProfileId() === _pemEditingId || !_pemEditingId){
+    applyActiveProfileToGlobals();
+    applyBadge();
+    refreshAccountScreen();
+  }
+  toast('\u2705 Perfil guardado');
+}
+
+function deleteCurrentEditingProfile(){
+  if(!_pemEditingId) return;
+  var list = getProfiles();
+  if(list.length <= 1){ toast('Debe quedar al menos un perfil'); return; }
+  var wasActive = getActiveProfileId() === _pemEditingId;
+  list = list.filter(function(p){ return p.id !== _pemEditingId; });
+  saveProfiles(list);
+  if(wasActive){
+    setActiveProfileId(list[0].id);
+    applyActiveProfileToGlobals();
+    applyBadge();
+  }
+  closeProfileEditModal();
+  if(document.getElementById('profile-select-screen').classList.contains('on')) renderProfileSelectGrid();
+  toast('Perfil eliminado');
+}
+
+/* Abre el selector de perfiles desde Cuenta > Cambiar perfil (solo si hay 2+, si no, abre editor directo) */
+function openChangeProfile(){
+  if(getProfiles().length > 1){
+    showProfileSelectScreen();
+  } else {
+    openProfileEditModal(getActiveProfileId());
+  }
+}
+
 /* ── Cierra el loader con fade ── */
 function hideLdr(){try{lsSet("am_splash_done","1");}catch(e){}
   var ldr = document.getElementById('ldr');
   if(!ldr) return;
   ldr.style.transition = 'opacity .5s ease';
   ldr.style.opacity    = '0';
-  setTimeout(function(){ ldr.style.display='none'; document.body.style.overflow=''; }, 520);
+  setTimeout(function(){
+    ldr.style.display='none';
+    document.body.style.overflow='';
+    document.documentElement.classList.remove('ldr-lock');
+    document.body.classList.remove('ldr-lock');
+    window.scrollTo(0,0);
+  }, 520);
 }
 
 /* ── Construye el grid de avatares en el onboarding ── */
@@ -4619,6 +5849,16 @@ function finishOnboarding(){
   currentAvatar = obSelectedAvatar;
   lsSet('am_name',   currentName);
   lsSet('am_avatar', currentAvatar);
+  /* Crear el primer perfil en el sistema de perfiles múltiples */
+  if(getProfiles().length === 0){
+    var p = {
+      id: genProfileId(), name: currentName, avatar: currentAvatar, pin:'',
+      restriction:'16+', audioLang:'Español (América Latina)', subsLang:'Español (América Latina)',
+      cc:'1', email:''
+    };
+    saveProfiles([p]);
+    setActiveProfileId(p.id);
+  }
   applyBadge();
   hideLdr();
 }
@@ -4667,9 +5907,38 @@ function showAccessScreen(){
   }
 }
 
+/* ── Cerrar sesión por completo: borra el código de acceso y vuelve a pedirlo ── */
+function logoutApp(){
+  document.getElementById('logout-modal').classList.add('on');
+}
+function closeLogoutModal(){
+  document.getElementById('logout-modal').classList.remove('on');
+}
+function confirmLogout(){
+  closeLogoutModal();
+  lsSet('am_codigo', '');
+  lsSet('am_expira', '');
+  lsSet('am_activado', '');
+  /* Cerrar cualquier modal/pantalla que esté abierta encima */
+  ['account-modal','profile-edit-modal','profile-modal','profile-select-screen'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.classList.remove('on');
+  });
+  document.body.style.overflow = '';
+  var input = document.getElementById('ac-codigo-input');
+  if(input) input.value = '';
+  showAccessScreen();
+}
+
 /* ── INIT principal ── */
 (function init(){
   document.body.style.overflow = 'hidden';
+
+  migrateLegacyProfile();
+  /* Si ya hay un perfil activo migrado/existente, sincronizar variables globales con él */
+  if(getProfiles().length > 0){
+    applyActiveProfileToGlobals();
+  }
 
   var savedCode   = lsGet('am_codigo');
   var savedExpira = lsGet('am_expira');
@@ -4686,7 +5955,12 @@ function showAccessScreen(){
   } else if(currentName && currentAvatar){
     /* Código OK + perfil completo → splash normal */
     applyBadge();
-    setTimeout(hideLdr, 2200);
+    setTimeout(function(){
+      hideLdr();
+      if(shouldShowProfileSelect()){
+        setTimeout(showProfileSelectScreen, 550);
+      }
+    }, 2200);
   } else {
     /* Código OK + sin perfil → splash → onboarding */
     setTimeout(showOnboarding, 4500);
@@ -4716,6 +5990,30 @@ function applyBadge(){
   if(bName){
     if(currentName){ bName.textContent=currentName; bName.style.display='block'; }
     else bName.style.display='none';
+  }
+
+  /* ── Sincronizar también el nav del panel EXPLORAR ── */
+  var eAvatar  = document.getElementById('exp-badge-avatar');
+  var eInit    = document.getElementById('exp-badge-initials');
+  var eIcon    = document.getElementById('exp-badge-icon');
+  var eName    = document.getElementById('exp-badge-name');
+
+  if(currentAvatar){
+    if(eAvatar){ eAvatar.src=currentAvatar; eAvatar.style.display='block'; }
+    if(eInit)   eInit.style.display='none';
+    if(eIcon)   eIcon.style.display='none';
+  } else if(currentName){
+    if(eInit){ eInit.textContent=currentName[0].toUpperCase(); eInit.style.display='block'; }
+    if(eAvatar) eAvatar.style.display='none';
+    if(eIcon)   eIcon.style.display='none';
+  } else {
+    if(eIcon)   eIcon.style.display='block';
+    if(eAvatar) eAvatar.style.display='none';
+    if(eInit)   eInit.style.display='none';
+  }
+  if(eName){
+    if(currentName){ eName.textContent=currentName; eName.style.display='block'; }
+    else eName.style.display='none';
   }
 }
 
@@ -4754,8 +6052,10 @@ function saveProfile(){
   if(nameVal) currentName = nameVal;
   lsSet('am_avatar', currentAvatar);
   lsSet('am_name',   currentName);
+  syncGlobalsToActiveProfile();
   applyBadge();
   closeProfileModal();
+  refreshAccountScreen();
   toast('\u2705 Perfil actualizado');
 }
 
@@ -4767,7 +6067,132 @@ function openProfileModal(){
 }
 function closeProfileModal(){
   document.getElementById('profile-modal').classList.remove('on');
+  var accOpen = document.getElementById('account-modal').classList.contains('on');
+  if(!accOpen) document.body.style.overflow='';
+}
+
+/* ═══ PANTALLA CUENTA ═══ */
+var ACC_RESTRICTIONS = ['Todas','7+','13+','16+','18+'];
+var ACC_LANGS = ['Español (América Latina)','Español (España)','English','Português'];
+
+function refreshAccountScreen(){
+  var nameEl = document.getElementById('acc-name');
+  var imgEl  = document.getElementById('acc-avatar-img');
+  var emailEl= document.getElementById('acc-email');
+  if(nameEl) nameEl.textContent = currentName || 'Usuario';
+  if(imgEl)  imgEl.src = currentAvatar || '';
+  var savedEmail = lsGet('am_email');
+  if(emailEl) emailEl.textContent = savedEmail || 'Agregar correo';
+  var emailInput = document.getElementById('acc-email-input');
+  if(emailInput) emailInput.value = savedEmail || '';
+  var activeP = getActiveProfile();
+  var pinOn = !!(activeP && activeP.pin);
+  var ccOn  = lsGet('am_cc_on');
+  var pinToggle = document.getElementById('acc-pin-toggle');
+  var ccToggle  = document.getElementById('acc-cc-toggle');
+  if(pinToggle) pinToggle.checked = pinOn;
+  if(ccToggle)  ccToggle.checked  = ccOn === '' ? true : ccOn === '1';
+  var restVal = lsGet('am_restriction') || '16+';
+  var audVal  = lsGet('am_audio_lang') || 'Español (América Latina)';
+  var subVal  = lsGet('am_subs_lang')  || 'Español (América Latina)';
+  var r = document.getElementById('acc-restriction-val'); if(r) r.textContent = restVal;
+  var a = document.getElementById('acc-audio-val');        if(a) a.textContent = audVal;
+  var s = document.getElementById('acc-subs-val');         if(s) s.textContent = subVal;
+  var subEl = document.getElementById('acc-sub-val');
+  if(subEl) subEl.textContent = getAccSubscriptionLabel();
+  var navAv = document.getElementById('acc-nav-avatar');
+  var navIc = document.getElementById('acc-nav-icon');
+  if(navAv){
+    if(currentAvatar){ navAv.src = currentAvatar; navAv.style.display='block'; if(navIc) navIc.style.display='none'; }
+    else { navAv.style.display='none'; if(navIc) navIc.style.display='block'; }
+  }
+}
+
+/* ── Determina el plan (1 mes / 3 meses / 6 meses / 1 año) según el código de acceso activo ── */
+function getAccSubscriptionLabel(){
+  var activado = lsGet('am_activado');
+  var expira   = lsGet('am_expira');
+  if(!activado || !expira) return 'Ultra Premium';
+
+  var dIni = new Date(activado + 'T00:00:00');
+  var dFin = new Date(expira   + 'T00:00:00');
+  if(isNaN(dIni.getTime()) || isNaN(dFin.getTime())) return 'Ultra Premium';
+
+  var dias = Math.round((dFin.getTime() - dIni.getTime()) / 86400000);
+
+  /* Mapea la duración real del código al plan comercial más cercano */
+  var planes = [
+    {dias: 30,  nombre: '1 Mes'},
+    {dias: 90,  nombre: '3 Meses'},
+    {dias: 180, nombre: '6 Meses'},
+    {dias: 365, nombre: '1 Año'}
+  ];
+  var mejor = planes[0], diff = Math.abs(dias - planes[0].dias);
+  for(var i=1;i<planes.length;i++){
+    var d = Math.abs(dias - planes[i].dias);
+    if(d < diff){ diff = d; mejor = planes[i]; }
+  }
+  return mejor.nombre + ' · Ultra Premium';
+}
+
+function openAccountModal(){
+  refreshAccountScreen();
+  document.getElementById('account-modal').classList.add('on');
+  document.body.style.overflow='hidden';
+}
+function closeAccountModal(){
+  document.getElementById('account-modal').classList.remove('on');
   document.body.style.overflow='';
+}
+
+function toggleAccPin(el){
+  if(el.checked){
+    /* Activar PIN: pedir el código de 4 dígitos para ESTE perfil */
+    openProfileEditModal(getActiveProfileId());
+    /* Si cancela sin guardar, revertir visualmente el switch */
+    setTimeout(function(){
+      var p = getActiveProfile();
+      el.checked = !!(p && p.pin);
+    }, 50);
+  } else {
+    var list = getProfiles();
+    var id = getActiveProfileId();
+    for(var i=0;i<list.length;i++){ if(list[i].id===id) list[i].pin=''; }
+    saveProfiles(list);
+  }
+}
+function toggleAccCC(el){ lsSet('am_cc_on', el.checked ? '1' : '0'); syncGlobalsToActiveProfile(); }
+
+function cycleAccRestriction(){
+  var cur = lsGet('am_restriction') || '16+';
+  var i = ACC_RESTRICTIONS.indexOf(cur);
+  var next = ACC_RESTRICTIONS[(i+1) % ACC_RESTRICTIONS.length];
+  lsSet('am_restriction', next);
+  document.getElementById('acc-restriction-val').textContent = next;
+  syncGlobalsToActiveProfile();
+}
+function cycleAccAudio(){
+  var cur = lsGet('am_audio_lang') || 'Español (América Latina)';
+  var i = ACC_LANGS.indexOf(cur);
+  var next = ACC_LANGS[(i+1) % ACC_LANGS.length];
+  lsSet('am_audio_lang', next);
+  document.getElementById('acc-audio-val').textContent = next;
+  syncGlobalsToActiveProfile();
+}
+function cycleAccSubs(){
+  var cur = lsGet('am_subs_lang') || 'Español (América Latina)';
+  var i = ACC_LANGS.indexOf(cur);
+  var next = ACC_LANGS[(i+1) % ACC_LANGS.length];
+  lsSet('am_subs_lang', next);
+  document.getElementById('acc-subs-val').textContent = next;
+  syncGlobalsToActiveProfile();
+}
+function saveAccEmail(){
+  var val = document.getElementById('acc-email-input').value.trim();
+  lsSet('am_email', val);
+  document.getElementById('acc-email').textContent = val || 'Agregar correo';
+  syncGlobalsToActiveProfile();
+  toast('\u2705 Correo guardado');
 }
 
 /* ── El listener del buscador que estaba en otro script ── */
@@ -5614,6 +7039,23 @@ waitAndBuild();
 })();
 </script>
 <script>
+/* ══ BOTÓN INICIO DEL NAV INFERIOR ══ */
+function goInicio(){
+  /* Cerrar overlays abiertos */
+  if(typeof closeNotifications === 'function') closeNotifications();
+  if(typeof closeProximamente  === 'function') closeProximamente();
+  if(typeof closeExplorar      === 'function') closeExplorar();
+
+  if(_navMyListActivo){
+    /* Si Mi Lista está activa, esto la desactiva y vuelve a Inicio */
+    activarMiLista();
+    return;
+  }
+  var pillInicio = document.querySelector('.pill');
+  if(pillInicio) filter(pillInicio, 'all');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
 /* ══ BOTÓN MI LISTA DEL NAV INFERIOR ══ */
 var _navMyListActivo = false;
 
@@ -6045,6 +7487,7 @@ async function acVerificar(){
       lsSet('am_codigo',  codigo);
       lsSet('am_expira',  data.expira);
       lsSet('am_usuario', data.usuario || '');
+      lsSet('am_activado', new Date().toISOString().split('T')[0]);
 
       var expEl = document.getElementById('ac-expiry');
       var expTxt = document.getElementById('ac-expiry-txt');
@@ -6250,5 +7693,358 @@ function closeProximamenteAndStop(){
 }
 </script>
 
+
+<div id="card-ctx">
+  <div style="padding:10px 18px 8px;border-bottom:1px solid rgba(212,175,106,.12);display:flex;align-items:center;gap:7px;">
+    <span style="display:inline-block;width:3px;height:12px;border-radius:2px;background:linear-gradient(180deg,#d4af6a,#c9a84c);flex-shrink:0;"></span>
+    <span id="ctx-title-label" style="font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1.2px;color:rgba(212,175,106,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">OPCIONES</span>
+  </div>
+  <button class="ctx-item" id="ctx-play">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    Reproducir
+  </button>
+  <button class="ctx-item" id="ctx-list">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Añadir a Mi lista
+  </button>
+  <button class="ctx-item" id="ctx-share">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+    Compartir
+  </button>
+  <button class="ctx-item" id="ctx-seen">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+    Marcar como visto
+  </button>
+</div>
+
+<script>
+/* ══ Menú contextual de cards ══ */
+var _ctxCi = null;
+var _ctxItem = null;
+var _ctxAnchorBtn = null;
+
+function _ctxIsOpen(){
+  var m = document.getElementById('card-ctx');
+  return m && m.classList.contains('on');
+}
+function closeCardCtx(){
+  var m = document.getElementById('card-ctx');
+  if(m) m.classList.remove('on');
+  if(_ctxAnchorBtn) _ctxAnchorBtn.classList.remove('ctx-open');
+  _ctxAnchorBtn = null;
+}
+function openCardCtxAt(e, ci, item){
+  _ctxCi = ci; _ctxItem = item;
+  var menu = document.getElementById('card-ctx');
+  if(!menu) return;
+  var inList = ci !== null && myList.has(String(ci));
+  var listBtn = document.getElementById('ctx-list');
+  var listSvg = listBtn.querySelector('svg');
+  listSvg.innerHTML = inList
+    ? '<line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2.2"/>'
+    : '<line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2.2"/><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2.2"/>';
+  listBtn.lastChild.textContent = inList ? ' En Mi lista' : ' Añadir a Mi lista';
+  /* Título en el header del menú */
+  var lbl = document.getElementById('ctx-title-label');
+  if(lbl && item && item.t) lbl.textContent = item.t;
+  else if(lbl) lbl.textContent = 'OPCIONES';
+  menu.classList.add('on');
+  var btn = e.currentTarget;
+  var rect = btn.getBoundingClientRect();
+  var mw=240, mh=220, vw=window.innerWidth, vh=window.innerHeight;
+  var left = rect.left - mw + rect.width;
+  if(left < 8) left = 8;
+  if(left + mw > vw - 8) left = vw - mw - 8;
+  var top = rect.bottom + 6;
+  if(top + mh > vh - 8) top = rect.top - mh - 6;
+  menu.style.left = left+'px'; menu.style.top = top+'px';
+}
+function toggleCardCtx(e, ci, item){
+  var btn = e.currentTarget;
+  if(_ctxIsOpen() && _ctxAnchorBtn === btn){ closeCardCtx(); return; }
+  _ctxAnchorBtn = btn;
+  btn.classList.add('ctx-open');
+  openCardCtxAt(e, ci, item);
+}
+/* Cerrar al tocar fuera */
+document.addEventListener('click', function(e){
+  if(_ctxIsOpen() && !e.target.closest('#card-ctx') && !e.target.closest('.cdots')){
+    closeCardCtx();
+  }
+});
+/* ★ Cerrar al hacer scroll (cualquier elemento) */
+window.addEventListener('scroll', function(){ closeCardCtx(); }, {passive:true});
+document.addEventListener('scroll', function(){ closeCardCtx(); }, {passive:true, capture:true});
+
+/* Botones del menú */
+document.addEventListener('DOMContentLoaded', function(){
+  document.getElementById('ctx-play').addEventListener('click', function(){
+    closeCardCtx();
+    if(_ctxCi !== null) playItem(_ctxCi);
+  });
+  document.getElementById('ctx-list').addEventListener('click', function(){
+    if(_ctxCi !== null) toggleList(_ctxCi, null);
+    else toast('Item externo');
+    closeCardCtx();
+  });
+  document.getElementById('ctx-share').addEventListener('click', function(){
+    closeCardCtx();
+    var title = _ctxItem ? _ctxItem.t : '';
+    var url   = _ctxItem ? (_ctxItem.h||'') : '';
+    if(navigator.share && url){ navigator.share({title:title,url:url}); }
+    else{ toast('📋 '+(title||'Link copiado')); }
+  });
+  document.getElementById('ctx-seen').addEventListener('click', function(){
+    closeCardCtx(); toast('✓ Marcado como visto');
+  });
+});
+</script>
+<!-- ══ PANEL EXPLORAR ══ -->
+<div id="explorar-panel">
+  <div id="explorar-hdr">
+    <button id="explorar-back" onclick="closeExplorar()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    </button>
+    <span id="explorar-title">EXPLORAR</span>
+    <div id="explorar-srch-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="explorar-srch-input" type="text" placeholder="Buscar…" autocomplete="off" oninput="explorarSearch(this.value)"/>
+    </div>
+  </div>
+  <div id="explorar-body">
+    <div id="explorar-tabs"></div>
+    <div id="explorar-content"></div>
+  </div>
+  <!-- Nav inferior dentro del panel explorar -->
+  <nav id="explorar-bottom-nav" style="position:absolute;bottom:0;left:0;right:0;z-index:910;background:rgba(10,10,10,.97);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.12);display:flex;align-items:flex-start;justify-content:space-between;padding:12px 24px 0;padding-bottom:max(16px,env(safe-area-inset-bottom));">
+    <div onclick="closeExplorar();goInicio();" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3.5 11.2 12 4l8.5 7.2" stroke="rgba(255,255,255,.55)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M5.5 9.8V19a1 1 0 0 0 1 1h3.2v-5.2a1 1 0 0 1 1-1h2.6a1 1 0 0 1 1 1V20h3.2a1 1 0 0 0 1-1V9.8" fill="rgba(255,255,255,.55)" stroke="rgba(255,255,255,.55)" stroke-width="1.2" stroke-linejoin="round"/>
+      </svg>
+      <span style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.3px;">INICIO</span>
+    </div>
+    <div onclick="closeExplorar();openNotifications();" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;">
+      <div style="position:relative;width:26px;height:26px;">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2.5C8.97 2.5 6.5 4.97 6.5 8v.5C5.1 9.3 4 10.55 4 12.1V17h16v-4.9c0-1.55-1.1-2.8-2.5-3.6V8c0-3.03-2.47-5.5-5.5-5.5z" fill="rgba(255,255,255,.55)"></path>
+          <path d="M10 17c0 1.1.9 2 2 2s2-.9 2-2" stroke="rgba(255,255,255,.55)" stroke-width="1.5" fill="none" stroke-linecap="round"></path>
+        </svg>
+      </div>
+      <span style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.3px;">AVISOS</span>
+    </div>
+    <div onclick="closeExplorar();activarMiLista();" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="5" width="18" height="2" rx="1" fill="rgba(255,255,255,.55)"></rect>
+        <rect x="3" y="11" width="13" height="2" rx="1" fill="rgba(255,255,255,.55)"></rect>
+        <rect x="3" y="17" width="10" height="2" rx="1" fill="rgba(255,255,255,.55)"></rect>
+        <circle cx="20" cy="17" r="3.5" fill="rgba(255,255,255,.3)"></circle>
+        <path d="M18.8 17l.8.8 1.6-1.6" stroke="rgba(255,255,255,.5)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+      </svg>
+      <span style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.3px;">MI LISTA</span>
+    </div>
+    <div onclick="closeExplorar();openProximamente();" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="9.5" stroke="rgba(255,255,255,.55)" stroke-width="1.6"/>
+        <polyline points="12,7 12,12.5 15.5,15" stroke="rgba(255,255,255,.55)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="18.5" cy="5.5" r="3.5" fill="#e50914"/>
+        <path d="M17.5 5.5h2M18.5 4.5v2" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      <span style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.3px;">PRONTO</span>
+    </div>
+    <!-- EXPLORAR — activo/dorado -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="3" width="7" height="7" rx="1.5" fill="var(--gold)"/>
+        <rect x="14" y="3" width="7" height="7" rx="1.5" fill="var(--gold)"/>
+        <rect x="3" y="14" width="7" height="7" rx="1.5" fill="var(--gold)"/>
+        <rect x="14" y="14" width="7" height="7" rx="1.5" fill="var(--gold)"/>
+      </svg>
+      <span style="font-size:9px;color:var(--gold);font-weight:600;letter-spacing:.3px;">EXPLORAR</span>
+    </div>
+    <!-- Perfil -->
+    <div onclick="closeExplorar();openAccountModal();" style="display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0;">
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:1px;">
+        <span id="exp-badge-name" style="font-size:11px;font-weight:700;color:#fff;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:none;line-height:1.2;"></span>
+        <span style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.3px;">MI PERFIL</span>
+      </div>
+      <div id="exp-profile-badge" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.7);overflow:hidden;border:1.5px solid rgba(255,255,255,.15);">
+        <img id="exp-badge-avatar" src="" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:none;"/>
+        <span id="exp-badge-initials" style="display:none;font-size:13px;font-weight:700;color:#fff;"></span>
+        <svg id="exp-badge-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"></path></svg>
+      </div>
+    </div>
+  </nav>
+</div>
+
+<script>
+/* ══ PANEL EXPLORAR POR GÉNEROS ══ */
+var _expOpen = false;
+
+var EXP_GENRES = [
+  {id:'all',           label:'Todo',                    color:'#d4af6a'},
+  {id:'pelicula',      label:'Películas',               color:'#e50914'},
+  {id:'series',        label:'Series',                  color:'#46d369'},
+  {id:'anime',         label:'Anime',                   color:'#7c5cff'},
+  {id:'marvel',        label:'Marvel',                  color:'#e50914'},
+  {id:'disney',        label:'Disney',                  color:'#00b4ff'},
+  {id:'donghua',       label:'Donghua',                 color:'#ff6f00'},
+  {id:'terror',        label:'Terror',                  color:'#ff6b35'},
+  {id:'accion',        label:'Acción',                  color:'#e50914'},
+  {id:'romance',       label:'Romance',                 color:'#ff69b4'},
+  {id:'comedia',       label:'Comedia',                 color:'#ffd700'},
+  {id:'cienciaficcion',label:'Sci-Fi',                  color:'#00e5ff'},
+  {id:'animacion',     label:'Animación',               color:'#ff9800'},
+  {id:'drama',         label:'Drama',                   color:'#9c27b0'},
+  {id:'suspenso',      label:'Suspenso',                color:'#607d8b'},
+  {id:'seleccion_hoy', label:'Selección de Hoy',        color:'#d4af6a'},
+  {id:'volver_verlo',  label:'Volver a Verlo',          color:'#46d369'},
+  {id:'favoritos',     label:'Favoritos',               color:'#e50914'},
+  {id:'doblajes',      label:'Doblajes ES',             color:'#7c5cff'},
+  {id:'infancia',      label:'Anime Infancia',          color:'#ff9800'},
+  {id:'nuevo',         label:'Lo Nuevo',                color:'#46d369'},
+];
+
+var _expCurrentGenre = 'all';
+var _expSearchQ = '';
+
+function openExplorar(){
+  _expOpen = true;
+  var panel = document.getElementById('explorar-panel');
+  panel.classList.add('on');
+  document.getElementById('explorar-srch-input').value = '';
+  _expSearchQ = '';
+  _expCurrentGenre = 'all';
+  renderExplorarTabs();
+  renderExplorarContent();
+  document.getElementById('nav-explorar-btn').classList.add('active');
+  applyBadge(); /* sincronizar nombre y avatar en el nav del explorar */
+}
+function closeExplorar(){
+  _expOpen = false;
+  document.getElementById('explorar-panel').classList.remove('on');
+  document.getElementById('nav-explorar-btn').classList.remove('active');
+}
+function explorarSearch(q){
+  _expSearchQ = q.toLowerCase().trim();
+  renderExplorarContent();
+}
+function renderExplorarTabs(){
+  var tabs = document.getElementById('explorar-tabs');
+  tabs.innerHTML = EXP_GENRES.map(function(g){
+    var isOn = g.id===_expCurrentGenre;
+    return '<button class="exp-tab'+(isOn?' on':'')+'" onclick="setExpGenre(\''+g.id+'\')"'
+      +(isOn?' style="border-color:'+g.color+';color:'+g.color+';box-shadow:0 0 0 1px '+g.color+'22,0 4px 16px '+g.color+'18;"':'')+'>'+g.label+'</button>';
+  }).join('');
+}
+function setExpGenre(id){
+  _expCurrentGenre = id;
+  _expSearchQ = '';
+  document.getElementById('explorar-srch-input').value = '';
+  renderExplorarTabs();
+  renderExplorarContent();
+}
+function renderExplorarContent(){
+  var content = document.getElementById('explorar-content');
+  var q = _expSearchQ;
+
+  // Si hay búsqueda activa, mostrar resultados planos
+  if(q.length > 0){
+    var hits = [];
+    for(var i=0;i<CATALOG.length;i++){
+      var it = CATALOG[i];
+      if(it.i && it.t && it.t.toLowerCase().indexOf(q)>=0) hits.push(i);
+    }
+    if(!hits.length){
+      content.innerHTML = '<div class="exp-nores">😕 Sin resultados para "'+q+'"</div>';
+      return;
+    }
+    content.innerHTML = '<div class="exp-grid">'+hits.slice(0,99).map(function(ci){
+      return expCardHtml(ci);
+    }).join('')+'</div>';
+    return;
+  }
+
+  // Mostrar por género(s)
+  if(_expCurrentGenre === 'all'){
+    // Mostrar todas las secciones
+    var html = '';
+    EXP_GENRES.slice(1).forEach(function(g){
+      var items = getItemsByGenre(g.id);
+      if(!items.length) return;
+      html += expSectionHtml(g, items);
+    });
+    content.innerHTML = html || '<div class="exp-nores">Sin contenido</div>';
+  } else {
+    var genre = EXP_GENRES.find(function(g){return g.id===_expCurrentGenre;});
+    var items = getItemsByGenre(_expCurrentGenre);
+    if(!items.length){
+      content.innerHTML = '<div class="exp-nores">Sin contenido en este género</div>';
+      return;
+    }
+    content.innerHTML = expSectionHtml(genre, items, true);
+  }
+}
+function getItemsByGenre(gid){
+  // Grupos expandidos
+  var extras = {
+    'anime':         ['anime','anime_dob','anime_am','anime_inf'],
+    'disney':        ['disney','disney_series'],
+    'pelicula':      ['pelicula'],
+    'series':        ['series'],
+    'marvel':        ['marvel'],
+    'donghua':       ['donghua_series','donghua_movie'],
+    'terror':        ['terror'],
+    'accion':        ['accion'],
+    'romance':       ['romance'],
+    'comedia':       ['comedia'],
+    'cienciaficcion':['cienciaficcion'],
+    'animacion':     ['animacion'],
+    'drama':         ['drama'],
+    'suspenso':      ['suspenso'],
+    'seleccion_hoy': ['seleccion_hoy'],
+    'volver_verlo':  ['volver_verlo'],
+    'favoritos':     ['favoritos_ayer_hoy'],
+    'doblajes':      ['anime_dob'],
+    'infancia':      ['anime_inf'],
+    'nuevo':         ['anime_am'],
+  };
+  var cats = extras[gid] || [gid];
+  var items = [];
+  for(var i=0;i<CATALOG.length;i++){
+    var it = CATALOG[i];
+    if(it.i && it.t && cats.indexOf(it.c)>=0) items.push(i);
+  }
+  return items;
+}
+function expSectionHtml(genre, items, showAll){
+  var display = showAll ? items : items.slice(0,12);
+  var more = !showAll && items.length > 12;
+  return '<div class="exp-section">'
+    +'<div class="exp-section-hdr">'
+      +'<span class="exp-section-line" style="background:'+genre.color+';"></span>'
+      +'<span class="exp-section-name">'+genre.label.toUpperCase()+'</span>'
+      +'<span class="exp-section-count">'+items.length+'</span>'
+    +'</div>'
+    +'<div class="exp-grid">'+display.map(function(ci){return expCardHtml(ci);}).join('')+'</div>'
+    +(more ? '<button onclick="setExpGenre(\''+genre.id+'\')" style="margin-top:10px;width:100%;padding:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:rgba(255,255,255,.65);font-size:13px;font-weight:600;cursor:pointer;">Ver los '+items.length+' títulos →</button>' : '')
+  +'</div>';
+}
+function expCardHtml(ci){
+  var it = CATALOG[ci];
+  return '<div class="exp-card-wrap">'
+    +'<div class="exp-card" onclick="closeExplorar();playItem('+ci+')">'
+      +'<img src="'+it.i+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
+    +'</div>'
+    +'<div class="exp-card-footer">'
+      +'<div class="exp-card-label">'+it.t+'</div>'
+      +'<button class="exp-card-dots cdots" onclick="toggleCardCtx(event,'+ci+',CATALOG['+ci+'])" aria-label="Opciones">'
+        +'<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>'
+      +'</button>'
+    +'</div>'
+  +'</div>';
+}
+// Cerrar con back gesture / swipe down no aplica pero sí con el botón back nativo si hay historial
+document.addEventListener('keydown',function(e){if(_expOpen && e.key==='Escape') closeExplorar();});
+</script>
 </body>
-</html>
