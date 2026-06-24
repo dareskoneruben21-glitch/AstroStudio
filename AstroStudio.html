@@ -83,6 +83,10 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   overflow:hidden;
 }
+#ldr.ob-phase{
+  justify-content:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding-top:20px;
+}
 
 /* ════ NUEVOSPLASH1 — estilos integrados ════ */
 
@@ -2747,7 +2751,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
   <div class="home-bar"></div>
 
   <!-- Phase 2: Onboarding (hidden until splash done) -->
-  <div id="splash-onboard" style="display:none;flex-direction:column;align-items:center;width:100%;max-width:420px;padding:0 20px;gap:0;overflow-y:auto;max-height:100vh;overscroll-behavior-y:contain;">
+  <div id="splash-onboard" style="display:none;flex-direction:column;align-items:center;width:100%;max-width:420px;padding:0 20px;gap:0;overflow-y:auto;max-height:calc(100vh - 40px);overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;flex:1;min-height:0;">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;color:var(--red);margin-bottom:2px;">Astro<em style="color:var(--gold);font-style:normal">Movie</em></div>
     <div style="font-size:13px;color:rgba(255,255,255,.55);margin-bottom:20px;letter-spacing:.3px;">Personaliza tu experiencia</div>
 
@@ -5891,6 +5895,7 @@ function showOnboarding(){
     });
   }
   setTimeout(function(){
+    if(ldr) ldr.classList.add('ob-phase');
     onboard.style.display= 'flex';
     buildObGrid();
     var nameInput = document.getElementById('ob-name');
