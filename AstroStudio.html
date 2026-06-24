@@ -5896,6 +5896,8 @@ function showOnboarding(){
   }
   setTimeout(function(){
     if(ldr) ldr.classList.add('ob-phase');
+    document.documentElement.classList.remove('ldr-lock');
+    document.body.classList.remove('ldr-lock');
     onboard.style.display= 'flex';
     buildObGrid();
     var nameInput = document.getElementById('ob-name');
