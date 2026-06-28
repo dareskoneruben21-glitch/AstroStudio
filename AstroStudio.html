@@ -572,7 +572,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
 .hdot::after{
   content:'';
   position:absolute;top:0;left:0;height:100%;width:0%;
-  background:#e50914;border-radius:2px;
+  background:var(--hdot-color,#e50914);border-radius:2px;
 }
 .hdot.on::after{
   animation:hdot-fill var(--hdot-dur,9s) linear forwards;
@@ -581,7 +581,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
   from{width:0%}
   to{width:100%}
 }
-.hdot.done::after{width:100%;background:#e50914;animation:none;}
+.hdot.done::after{width:100%;background:var(--hdot-color,#e50914);animation:none;}
 
 /* ── POSTER FLOTANTE TABLET/LAPTOP ──
    En móvil: oculto (display:none).
@@ -2432,6 +2432,53 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
   </defs>
 </svg>
 <div id="arena-layer"></div>
+<script>
+(function(){
+  /* Color del día — mismo cálculo HSL usado en los dots del hero,
+     aplicado aquí como matiz base de la capa de fondo (#arena-layer),
+     conservando exactamente la misma forma/opacidades del degradado original. */
+  function dayHue(){
+    var dayIndex=Math.floor(Date.now()/86400000);
+    return dayIndex%360;
+  }
+  function hslToRgb(h,s,l){
+    s/=100;l/=100;
+    var c=(1-Math.abs(l*2-1))*s;
+    var x=c*(1-Math.abs((h/60)%2-1));
+    var m=l-c/2;
+    var r=0,g=0,b=0;
+    if(h<60){r=c;g=x;b=0;}
+    else if(h<120){r=x;g=c;b=0;}
+    else if(h<180){r=0;g=c;b=x;}
+    else if(h<240){r=0;g=x;b=c;}
+    else if(h<300){r=x;g=0;b=c;}
+    else{r=c;g=0;b=x;}
+    return [Math.round((r+m)*255),Math.round((g+m)*255),Math.round((b+m)*255)];
+  }
+  try{
+    var hue=dayHue();
+    /* Misma curva de luminosidad relativa que tenía el azul marino original,
+       solo cambiando el matiz; saturación moderada para no saturar la pantalla. */
+    var stops=[
+      {l:22,a:.98,p:'0%'},
+      {l:25,a:.90,p:'6%'},
+      {l:28,a:.72,p:'14%'},
+      {l:26,a:.45,p:'24%'},
+      {l:22,a:.18,p:'34%'},
+      {l:16,a:.04,p:'42%'}
+    ];
+    var sat=42;
+    var parts=stops.map(function(s){
+      var rgb=hslToRgb(hue,sat,s.l);
+      return 'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+s.a+') '+s.p;
+    });
+    parts.push('transparent 52%');
+    var layer=document.getElementById('arena-layer');
+    if(layer)layer.style.background='linear-gradient(180deg,'+parts.join(',')+')';
+  }catch(e){}
+})();
+</script>
+
 <div id="star-field"></div>
 <div id="ldr">
 
@@ -3391,6 +3438,28 @@ function rnd(){ return Math.floor(82+Math.random()*17); }
 
 /* ═══ HERO ═══ */
 var HERO_DURATION = 9000; /* ms — debe coincidir con setInterval */
+function _dayColorHex(){
+  /* Color determinístico por día: cambia cada día del calendario,
+     cubre todo el espacio de tonos (HSL) y solo se repite cada 360 días. */
+  var d=new Date();
+  var dayIndex=Math.floor(d.getTime()/86400000); /* días desde epoch, mismo valor todo el día en cualquier huso */
+  var hue=dayIndex%360;
+  var sat=72;
+  var light=52;
+  var c=(1-Math.abs((light/100)*2-1))*(sat/100);
+  var x=c*(1-Math.abs((hue/60)%2-1));
+  var m=(light/100)-c/2;
+  var r=0,g=0,b=0;
+  if(hue<60){r=c;g=x;b=0;}
+  else if(hue<120){r=x;g=c;b=0;}
+  else if(hue<180){r=0;g=c;b=x;}
+  else if(hue<240){r=0;g=x;b=c;}
+  else if(hue<300){r=x;g=0;b=c;}
+  else{r=c;g=0;b=x;}
+  var toHex=function(v){var h=Math.round((v+m)*255).toString(16);return h.length===1?'0'+h:h;};
+  return '#'+toHex(r)+toHex(g)+toHex(b);
+}
+var DAY_COLOR=_dayColorHex();
 function setDots(n, active) {
   var el=document.getElementById("hdots"); el.innerHTML="";
   for(var i=0;i<n;i++){
@@ -3400,6 +3469,7 @@ function setDots(n, active) {
     var d=document.createElement("button");
     d.className=cls;
     d.style.setProperty('--hdot-dur', (HERO_DURATION/1000)+'s');
+    d.style.setProperty('--hdot-color', DAY_COLOR);
     d.onclick=(function(j){return function(){goHero(j);};})(i);
     el.appendChild(d);
   }
