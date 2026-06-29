@@ -335,7 +335,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
 /* HEADER */
 #hdr{position:fixed;top:0;left:0;right:0;z-index:800;
   height:calc(62px + env(safe-area-inset-top));
-  padding-top:env(safe-area-inset-top);
+  padding-top:calc(env(safe-area-inset-top, 24px) - 8px);
   display:flex;align-items:center;justify-content:space-between;
   padding-left:16px;padding-right:16px;
   background:transparent;transition:background .4s,backdrop-filter .4s,height .3s cubic-bezier(.4,0,.2,1)}
@@ -2770,6 +2770,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
     gap:1px;
     pointer-events:none;
     user-select:none;
+    margin-top:-6px;
   ">
     <div style="
       font-family:'Russo One',sans-serif;
