@@ -400,7 +400,8 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
   aspect-ratio:2/3;max-height:86vh;
   background:var(--bg2);overflow:hidden;
   border-radius:20px;
-  box-shadow:0 12px 50px rgba(0,0,0,.75),0 2px 14px rgba(0,0,0,.55),inset 0 0 0 1px rgba(212,175,106,.08)
+  box-shadow:0 12px 50px rgba(0,0,0,.75),0 2px 14px rgba(0,0,0,.55),inset 0 0 0 1px rgba(212,175,106,.08);
+  perspective:800px;
 }
 /* poster sin texto: limpio y a calidad original */
 .himg{
@@ -513,7 +514,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
   100%{ opacity:0;  filter:blur(12px); transform:scale(1.06); }
 }
 
-/* Nueva imagen entra más despacio */
+/* Nueva imagen entra más despacio — modo por defecto (zoom-in clásico, se mantiene intacto) */
 .himg.entering{
   animation:heroFadeIn 1.3s cubic-bezier(.22,1,.36,1) forwards;
 }
@@ -521,6 +522,57 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
   0%  { opacity:0; filter:blur(8px); transform:scale(.96); }
   40% { opacity:.5; filter:blur(3px); transform:scale(.98); }
   100%{ opacity:1; filter:blur(0);   transform:scale(1);   }
+}
+
+/* ── VARIANTES DE ENTRADA — se asignan al azar en goHero() para que cada
+   transición del hero se vea distinta y no sea siempre el mismo movimiento ── */
+
+/* Variante: zoom-out (empieza grande y se asienta) */
+.himg.entering-zoomout{
+  animation:heroFadeZoomOut 1.3s cubic-bezier(.22,1,.36,1) forwards;
+}
+@keyframes heroFadeZoomOut{
+  0%  { opacity:0; filter:blur(8px); transform:scale(1.12); }
+  40% { opacity:.5; filter:blur(3px); transform:scale(1.05); }
+  100%{ opacity:1; filter:blur(0);   transform:scale(1);    }
+}
+
+/* Variante: deslizar desde la izquierda */
+.himg.entering-slidel{
+  animation:heroFadeSlideL 1.3s cubic-bezier(.22,1,.36,1) forwards;
+}
+@keyframes heroFadeSlideL{
+  0%  { opacity:0; filter:blur(6px); transform:translateX(-6%) scale(1.03); }
+  45% { opacity:.6; filter:blur(2px); transform:translateX(-2%) scale(1.01); }
+  100%{ opacity:1; filter:blur(0);   transform:translateX(0)   scale(1);    }
+}
+
+/* Variante: deslizar desde la derecha */
+.himg.entering-slider{
+  animation:heroFadeSlideR 1.3s cubic-bezier(.22,1,.36,1) forwards;
+}
+@keyframes heroFadeSlideR{
+  0%  { opacity:0; filter:blur(6px); transform:translateX(6%) scale(1.03); }
+  45% { opacity:.6; filter:blur(2px); transform:translateX(2%) scale(1.01); }
+  100%{ opacity:1; filter:blur(0);   transform:translateX(0)   scale(1);    }
+}
+
+/* Variante: drift vertical + tilt 3D leve */
+.himg.entering-tilt{
+  animation:heroFadeTilt 1.4s cubic-bezier(.22,1,.36,1) forwards;
+  transform-origin:50% 30%;
+}
+@keyframes heroFadeTilt{
+  0%  { opacity:0; filter:blur(7px); transform:translateY(2.5%) rotateX(4deg) scale(1.04); }
+  45% { opacity:.55; filter:blur(2px); transform:translateY(.8%) rotateX(1.5deg) scale(1.015); }
+  100%{ opacity:1; filter:blur(0);   transform:translateY(0)    rotateX(0)     scale(1);     }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .himg.entering,.himg.entering-zoomout,.himg.entering-slidel,
+  .himg.entering-slider,.himg.entering-tilt{
+    animation:heroFadeIn .6s ease forwards;
+  }
 }
 
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -549,9 +601,11 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
   font-size:12px;color:rgba(255,255,255,.75);font-weight:600;
 }
 #hrating .hrate-box{
-  border:1.5px solid rgba(255,255,255,.5);border-radius:4px;
-  padding:1px 6px;font-size:11px;font-weight:700;color:#fff;
+  display:inline-block;background:rgba(255,255,255,.16);
+  border-radius:2px;transform:skewX(-8deg);
+  padding:1px 7px;font-size:11px;font-weight:700;font-style:italic;color:#fff;
 }
+#hrating .hrate-box span{display:inline-block;transform:skewX(8deg)}
 #hrating .hrate-dot{
   width:3px;height:3px;border-radius:50%;
   background:rgba(255,255,255,.5);display:inline-block;
@@ -3130,6 +3184,17 @@ async function safeFetch(url) {
   catch(e) { return null; }
 }
 
+/* ─── Util: recorta la sinopsis para que no se vea muy larga en el hero/banner ─── */
+function truncOverview(txt, max){
+  if(!txt) return txt;
+  max = max || 140;
+  if(txt.length <= max) return txt;
+  var cut = txt.slice(0, max);
+  var lastSpace = cut.lastIndexOf(' ');
+  if(lastSpace > 0) cut = cut.slice(0, lastSpace);
+  return cut.trim() + '…';
+}
+
 /* ─── Cache ─── */
 var idCache      = {};  // key → {id,type} | null
 var logoCache    = {};  // key → url | null
@@ -3509,6 +3574,28 @@ function setDots(n, active) {
   }
 }
 
+/* ── VARIANTES DE ENTRADA DEL HERO ──
+   Cada vez que cambia la imagen se elige al azar uno de varios efectos
+   distintos (zoom-in, zoom-out, slide izq/der, tilt 3D) para que la
+   transición nunca se sienta repetitiva. Se evita repetir la misma
+   variante dos veces seguidas. */
+var _HERO_ENTER_VARIANTS = ['entering','entering-zoomout','entering-slidel','entering-slider','entering-tilt'];
+var _heroLastVariant = null;
+function _heroPickVariant(){
+  var pool = _HERO_ENTER_VARIANTS.filter(function(v){ return v !== _heroLastVariant; });
+  var v = pool[Math.floor(Math.random()*pool.length)];
+  _heroLastVariant = v;
+  return v;
+}
+function _heroClearEntering(imgEl){
+  if(!imgEl) return;
+  _HERO_ENTER_VARIANTS.forEach(function(v){ imgEl.classList.remove(v); });
+}
+function _heroAddEntering(imgEl){
+  if(!imgEl) return;
+  imgEl.classList.add(_heroPickVariant());
+}
+
 function clearHeroText() {
   var logoEl  = document.getElementById("hlogo");
   var txtEl   = document.getElementById("hlogotxt");
@@ -3541,7 +3628,7 @@ function clearHeroText() {
   }
 
   /* Resetear imagen nueva invisible mientras carga */
-  imgEl.classList.remove('entering');
+  _heroClearEntering(imgEl);
   imgEl.style.opacity = '0';
 
   /* Mostrar spinner */
@@ -3568,9 +3655,9 @@ async function showHero(item, ci, token) {
     imgEl.style.objectPosition = 'center top';
     imgEl.style.opacity = '1';
     spinEl.style.display = 'none';
-    if(!imgEl.classList.contains('entering')){
+    if(!_HERO_ENTER_VARIANTS.some(function(v){ return imgEl.classList.contains(v); })){
       void imgEl.offsetWidth;
-      imgEl.classList.add('entering');
+      _heroAddEntering(imgEl);
     }
   }
 
@@ -3594,14 +3681,14 @@ async function showHero(item, ci, token) {
       var ageRating = ageMap[it.c] || 'TV-14';
       if(ratingEl){
         ratingEl.innerHTML =
-          '<span class="hrate-box">'+ageRating+'</span>'+
+          '<span class="hrate-box"><span>'+ageRating+'</span></span>'+
           '<span class="hrate-dot"></span>'+
           '<span>'+audioTag+'</span>';
         ratingEl.style.display='flex';
       }
       /* Sinopsis */
       if(descEl && data && data.overview){
-        descEl.textContent = data.overview;
+        descEl.textContent = truncOverview(data.overview, 140);
         descEl.style.display='block';
       }
     });
@@ -3636,7 +3723,7 @@ async function showHero(item, ci, token) {
     var backdropSrc = (backdropData && backdropData.img) ? backdropData.img : posterUrl;
     if(hcard) hcard.classList.add('hcard--landscape');
 
-    imgEl.classList.remove('entering');
+    _heroClearEntering(imgEl);
     imgEl.style.opacity = '0';
     imgEl.src = backdropSrc;
     imgEl.style.objectPosition = 'center center';
@@ -3644,7 +3731,7 @@ async function showHero(item, ci, token) {
       if(token!==heroToken) return;
       spinEl.style.display = 'none';
       void imgEl.offsetWidth;
-      imgEl.classList.add('entering');
+      _heroAddEntering(imgEl);
       imgEl.style.opacity = '';
     };
     imgEl.onerror = function(){
@@ -3652,7 +3739,7 @@ async function showHero(item, ci, token) {
       imgEl.src = posterUrl;
       imgEl.style.objectPosition = 'center top';
       spinEl.style.display = 'none';
-      imgEl.classList.add('entering');
+      _heroAddEntering(imgEl);
       imgEl.style.opacity = '';
     };
 
@@ -3669,7 +3756,7 @@ async function showHero(item, ci, token) {
     /* ── PORTRAIT: poster vertical 2:3, sin poster flotante ── */
     if(hcard) hcard.classList.remove('hcard--landscape');
 
-    imgEl.classList.remove('entering');
+    _heroClearEntering(imgEl);
     imgEl.style.opacity = '0';
     imgEl.src = posterUrl;
     imgEl.style.objectPosition = 'center top';
@@ -3677,14 +3764,14 @@ async function showHero(item, ci, token) {
       if(token!==heroToken) return;
       spinEl.style.display = 'none';
       void imgEl.offsetWidth;
-      imgEl.classList.add('entering');
+      _heroAddEntering(imgEl);
       imgEl.style.opacity = '';
     };
     imgEl.onerror = function(){
       if(token!==heroToken) return;
       imgEl.src = item.i;
       spinEl.style.display = 'none';
-      imgEl.classList.add('entering');
+      _heroAddEntering(imgEl);
       imgEl.style.opacity = '';
     };
 
@@ -3698,9 +3785,9 @@ async function showHero(item, ci, token) {
     if(token!==heroToken) return;
     if(imgEl.complete && imgEl.naturalWidth){
       spinEl.style.display = 'none';
-      if(!imgEl.classList.contains('entering')){
+      if(!_HERO_ENTER_VARIANTS.some(function(v){ return imgEl.classList.contains(v); })){
         void imgEl.offsetWidth;
-        imgEl.classList.add('entering');
+        _heroAddEntering(imgEl);
         imgEl.style.opacity = '';
       }
     }
@@ -4704,7 +4791,7 @@ function closeVertodo(){
               }
               /* Descripción */
               if (data.overview && descEl) {
-                descEl.textContent = data.overview;
+                descEl.textContent = truncOverview(data.overview, 140);
               }
             });
 
