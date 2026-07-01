@@ -339,7 +339,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
   display:flex;align-items:center;justify-content:space-between;
   padding-left:16px;padding-right:16px;
   background:transparent;transition:background .4s,backdrop-filter .4s,height .3s cubic-bezier(.4,0,.2,1)}
-#hdr.solid{background:rgba(10,10,15,.97);backdrop-filter:blur(16px);height:calc(58px + env(safe-area-inset-top));border-bottom:1px solid var(--line)}
+#hdr.solid{background:rgba(10,10,15,.97);backdrop-filter:blur(16px);height:calc(74px + env(safe-area-inset-top));border-bottom:1px solid var(--line)}
 .hwm{font-family:"Bebas Neue",sans-serif;font-size:34px;letter-spacing:2.5px;color:var(--red);text-shadow:0 1px 8px rgba(0,0,0,1),0 0 16px rgba(0,0,0,1);line-height:1}
 .hwm em{color:#fff;font-style:normal;text-shadow:0 1px 8px rgba(0,0,0,1),0 0 16px rgba(0,0,0,1)}
 /* chip: outline transparente por defecto, sólido al scroll */
@@ -2512,7 +2512,9 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:#f2f2f2}
      conservando exactamente la misma forma/opacidades del degradado original. */
   function dayHue(){
     var dayIndex=Math.floor(Date.now()/86400000);
-    return dayIndex%360;
+    /* Mismo paso de 137° (coprimo con 360) que _dayColorHex(), para que esta
+       capa cambie de color de forma notoria cada día en vez de 1°/día. */
+    return (dayIndex*137)%360;
   }
   function hslToRgb(h,s,l){
     s/=100;l/=100;
@@ -3543,7 +3545,11 @@ function _dayColorHex(){
      cubre todo el espacio de tonos (HSL) y solo se repite cada 360 días. */
   var d=new Date();
   var dayIndex=Math.floor(d.getTime()/86400000); /* días desde epoch, mismo valor todo el día en cualquier huso */
-  var hue=dayIndex%360;
+  /* Antes: hue=dayIndex%360 avanzaba solo 1° por día -> cambio imperceptible
+     (semanas enteras dentro de la misma franja de "verde"). Ahora se usa un
+     paso de 137° (coprimo con 360) tipo "ángulo dorado": cada día salta a un
+     tono bien distinto y aun así los 360 colores no se repiten hasta el día 360. */
+  var hue=(dayIndex*137)%360;
   var sat=72;
   var light=52;
   var c=(1-Math.abs((light/100)*2-1))*(sat/100);
